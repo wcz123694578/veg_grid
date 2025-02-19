@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.35319.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Core", "VegGridLayouter.Core\VegGridLayouter.Core.csproj", "{C299426D-A575-4C94-AF06-70A67AF9D9A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Test", "VegGridLayouter.Test\VegGridLayouter.Test.csproj", "{B5947374-1A21-4A3C-850F-CD2CCDF1011F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C299426D-A575-4C94-AF06-70A67AF9D9A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C299426D-A575-4C94-AF06-70A67AF9D9A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C299426D-A575-4C94-AF06-70A67AF9D9A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5947374-1A21-4A3C-850F-CD2CCDF1011F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5947374-1A21-4A3C-850F-CD2CCDF1011F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5947374-1A21-4A3C-850F-CD2CCDF1011F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5947374-1A21-4A3C-850F-CD2CCDF1011F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
