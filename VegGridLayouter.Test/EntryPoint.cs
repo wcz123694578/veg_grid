@@ -21,7 +21,7 @@ namespace VegGridLayouter.Test
             grid.AddColumn(new ColumnDefinition { Type = GridSizeType.Star, Value = 1 });
 
             grid.AddChild(new GridChild { Row = 0, Column = 0 });
-            grid.AddChild(new GridChild { Row = 1, Column = 1 });
+            grid.AddChild(new GridChild { Row = 1, Column = 1, ColumnSpan = 2 });
             grid.AddChild(new GridChild { Row = 2, Column = 2 });
 
             int width = grid.CurProject.Video.Width;
