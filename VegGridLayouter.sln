@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.35319.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Core", "VegGridLayouter.Core\VegGridLayouter.Core.csproj", "{C299426D-A575-4C94-AF06-70A67AF9D9A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Test", "VegGridLayouter.Test\VegGridLayouter.Test.csproj", "{B5947374-1A21-4A3C-850F-CD2CCDF1011F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.UI", "VegGridLayouter.UI\VegGridLayouter.UI.csproj", "{B5947374-1A21-4A3C-850F-CD2CCDF1011F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Deserializer", "VegGridLayouter.Parser\VegGridLayouter.Deserializer.csproj", "{3F16CE19-BA7F-4DBD-B05A-9929536BD56A}"
 EndProject

@@ -3,7 +3,7 @@
   <RowDefinitions>
     <RowDefinition Type="Fixed" Value="200"/>
     <RowDefinition Type="Star" Value="1"/>
-    <RowDefinition Type="Star" Value="1"/>
+    <RowDefinition Type="Fixed" Value="100"/>
     <RowDefinition Type="Star" Value="1"/>
   </RowDefinitions>
   <ColumnDefinitions>
@@ -15,5 +15,6 @@
     <GridChild Row="0"/>
     <GridChild Row="1" Column="1" ColumnSpan="2"/>
     <GridChild Row="2" Column="2"/>
+    <GridChild Row="3" Column="1"/>
   </Children>
 </VegGrid>

@@ -1,31 +1,37 @@
 # Vegas Grid布局器
-- 本项目是模仿wpf的grid布局方式，大战chatgpt实现的vegas网格布局器，目前还有很多bug，**并且还没做前端，只能引用VegGridLayouter.Core.dll类库自己写布局代码直接加到vegas脚本目录里**。
+- 本项目是模仿wpf的grid布局方式，大战chatgpt实现的vegas网格布局器，目前还有很多bug，xml还没做语法检查，只能一次性写对。~~并且还没做前端，只能引用VegGridLayouter.Core.dll类库自己写布局代码直接加到vegas脚本目录里~~。
 - 因为项目新建文件夹时的目标是写一个完整的布局框架，所以把很多东西按自己的使用习惯都封装了，结果最后怎么也写不出来。
-- **目前生成时是直接拉伸轨道，以后会改成用蒙版**
+- ~~目前生成时是直接拉伸轨道，以后会改成用蒙版~~
+- 编译前需要给VegGridLayouter.UI项目安装如下nuget包：
+    1 Prism.Wpf
+    2 AvalonEdit
+    3 Microsoft.Xaml.Behavior
+
+TODO:
+    - [x] XML解析以及简单的UI功能
+    - [ ] 简单的预设，比如输入n*n就可以生成这么多网格 
 ## 使用方式
-在FromVegas入口添加如下代码来将vegas对象添加到VegasManager中，这样VegGrid最终渲染的时候才能访问到vegas对象。
-```csharp
-void FromVegas(Vegas vegas) {
-    VegasManager.Instance = vegas;
-}
+目前是通过解析xml字符串填充到网格对象里再生成。
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<VegGrid>
+  <RowDefinitions> <!-- 定义行 -->
+    <RowDefinition Type="Fixed" Value="200"/>
+    <RowDefinition Type="Star" Value="1"/>
+    <RowDefinition Type="Fixed" Value="100"/>
+    <RowDefinition Type="Star" Value="1"/>
+  </RowDefinitions>
+  <ColumnDefinitions> <!-- 定义列 -->
+    <ColumnDefinition Type="Star" Value="1"/>
+    <ColumnDefinition Type="Star" Value="2"/>
+    <ColumnDefinition Type="Star" Value="1"/>
+  </ColumnDefinitions>
+  <Children>
+    <GridChild Row="0"/>
+    <GridChild Row="1" Column="1" ColumnSpan="2"/>
+    <GridChild Row="2" Column="2"/>
+    <GridChild Row="3" Column="1"/>
+  </Children>
+</VegGrid>
 ```
-接下来就是实例化VegGrid了，而且布局方式和wpf里动态生成grid的方式类似（不会wpf的小盆友有难了，具体咋搞去学一下吧，本来就没做前端，以后会做得\(\*\^_\^*)），不过Auto类尺寸实现还不完善，先注释掉了。
-VegGrid继承自VegElement类，里面有一个CurVegas和CurProject来维护当前指向的工程。
-```csharp
-VegGrid grid = new VegGrid();
-grid.AddRow(new RowDefinition { Type = GridSizeType.Fixed, Value = 50 });
-grid.AddRow(new RowDefinition { Type = GridSizeType.Star, Value = 1 });
-grid.AddRow(new RowDefinition { Type = GridSizeType.Star, Value = 2 });
-
-grid.AddColumn(new ColumnDefinition { Type = GridSizeType.Fixed, Value = 100 });
-grid.AddColumn(new ColumnDefinition { Type = GridSizeType.Star, Value = 2 });
-grid.AddColumn(new ColumnDefinition { Type = GridSizeType.Star, Value = 1 });
-
-grid.AddChild(new GridChild { Row = 0, Column = 0 });
-grid.AddChild(new GridChild { Row = 1, Column = 1, ColumnSpan = 2 });
-grid.AddChild(new GridChild { Row = 2, Column = 2 });
-```
-最后就是计算并生成布局，这样就可以自己使用了
-```csharp
-grid.Generate();
-```
+点击“生成”按钮就可以关闭窗口查看效果了

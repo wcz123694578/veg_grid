@@ -27,5 +27,15 @@ namespace VegGridLayouter.Parser
                 return grid;
             }
         }
+
+        public static VegGrid DeserializeXmlString(string xml)
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(VegGrid));
+            using (StringReader reader = new StringReader(xml))
+            {
+                return (VegGrid)xs.Deserialize(reader);
+            }
+            // return grid;
+        }
     }
 }
