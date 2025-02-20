@@ -1,5 +1,6 @@
 ﻿using Prism.Commands;
 using Prism.Mvvm;
+using System;
 using System.Windows;
 using VegGridLayouter.Core;
 using VegGridLayouter.Parser;
@@ -30,14 +31,24 @@ namespace VegGridLayouter.UI.ViewModels
         {
             VegGrid grid = new VegGrid();
             // FileStream fs = File.Open("test.xml", FileMode.Open);
-            grid = VegXmlDeserializer.DeserializeXmlString(this._code);
+            try
+            {
+                grid = VegXmlDeserializer.DeserializeXmlString(this._code);
 
-            int width = grid.CurProject.Video.Width;
-            int height = grid.CurProject.Video.Height;
+                int width = grid.CurProject.Video.Width;
+                int height = grid.CurProject.Video.Height;
 
-            grid.CalculateLayout(width, height);
+                grid.CalculateLayout(width, height);
 
-            grid.Generate();
+                grid.Generate();
+
+                MessageBox.Show("生成完毕！");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            
         }
     }
 }
