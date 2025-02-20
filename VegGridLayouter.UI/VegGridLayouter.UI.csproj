@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\ILRepack.2.0.39\build\ILRepack.props" Condition="Exists('..\packages\ILRepack.2.0.39\build\ILRepack.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +15,8 @@
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -100,4 +103,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILRepack.2.0.39\build\ILRepack.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILRepack.2.0.39\build\ILRepack.props'))" />
+  </Target>
+  <!-- <Target Name="ILRepack">
+    <Exec Command="&quot;$(ILRepack)&quot; /out:$(OutputPath)$(AssemblyName).dll $(OutputPath)VegGridLayouter.Core.dll" />
+  </Target> -->
+  <Target Name="ILRepack">
+    <Exec Command="&quot;$(ILRepack)&quot; /out:$(OutputPath)VegGridLayouter.dll $(OutputPath)VegGridLayouter.UI.dll $(OutputPath)VegGridLayouter.Core.dll $(OutputPath)VegGridLayouter.Deserializer.dll $(OutputPath)ICSharpCode.AvalonEdit.dll $(OutputPath)Microsoft.Xaml.Behaviors.dll $(OutputPath)Prism.dll $(OutputPath)ScriptPortal.Vegas.dll $(OutputPath)System.ValueTuple.dll" />
+  </Target>
 </Project>

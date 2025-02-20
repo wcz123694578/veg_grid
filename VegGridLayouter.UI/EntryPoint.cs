@@ -8,7 +8,7 @@ namespace VegGridLayouter.UI
 {
     public class EntryPoint
     {
-        [STAThread]
+        // [STAThread]
         public void FromVegas(Vegas vegas)
         {
             VegasManager.Instance = vegas;
