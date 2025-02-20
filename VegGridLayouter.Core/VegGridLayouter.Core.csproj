@@ -57,6 +57,7 @@
     <Compile Include="VegGridLayouterObject.cs" />
     <Compile Include="VegPosition.cs" />
     <Compile Include="VegTrack.cs" />
+    <Compile Include="VegTrackHelper.cs" />
     <Compile Include="Visual\VegBrush.cs" />
     <Compile Include="Visual\VegColor.cs" />
   </ItemGroup>

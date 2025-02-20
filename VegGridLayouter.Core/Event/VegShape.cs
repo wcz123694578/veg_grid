@@ -6,7 +6,7 @@ namespace VegGridLayouter.Core.Element
     public abstract class VegShape : VegEvent
     {
         public VegColor Color { get; set; } = new VegColor { R = 0xff, G = 0xff, B = 0xff, A = 1 };
-        public abstract Effect maskEffect { get; set; }
+        public override Effect maskEffect { get; set; }
 
         protected void ApplyColor(VideoEvent videoEvent)
         {

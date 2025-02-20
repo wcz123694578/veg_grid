@@ -50,10 +50,33 @@ namespace VegGridLayouter.Core
             }
         }
 
+        public VegThickness Margin { get; set; } = new VegThickness();        // 内边距
+
         // 目前Generate放在此处十分不合理
         public virtual void Generate()
         {
 
         }
+    }
+
+    public class VegThickness
+    {
+        public VegThickness()
+        {
+
+        }
+
+        public VegThickness(int _left, int _top, int _right, int _bottom)
+        {
+            this.Left = _left;
+            this.Top = _top;
+            this.Right = _right;
+            this.Bottom = _bottom;
+        }
+
+        public int Left { get; set; } = 0;
+        public int Top { get; set; } = 0;
+        public int Right { get; set; } = 0;
+        public int Bottom { get; set; } = 0;
     }
 }

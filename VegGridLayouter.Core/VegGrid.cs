@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScriptPortal.Vegas;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VegGridLayouter.Core.Element;
@@ -70,21 +71,32 @@ namespace VegGridLayouter.Core
 
         public override void Generate()
         {
-            int width = CurProject.Video.Width;
-            int height = CurProject.Video.Height;
+            double width = CurProject.Video.Width;
+            double height = CurProject.Video.Height;
 
             foreach (var item in Children)
             {
+                double trackWidth = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth) : (item.ComputedHeight * (width / height));
+                double trackHeight = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth * (height / width)) : (item.ComputedHeight);
                 VegTrack track = new VegTrack(
                     CurVegas.Project.AddVideoTrack(),
-                    item.ComputedWidth, item.ComputedHeight
+                    trackWidth, trackHeight
                 );
                 track.Position = new VegPosition(
                     -width / 2 + item.ComputedX + item.ComputedWidth / 2,
                     height / 2 - item.ComputedY - item.ComputedHeight / 2);
 
+                PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
+                this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
+
+                OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
+                OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
+                widthParameter.Value = item.ComputedWidth / trackWidth;
+                heightParameter.Value = item.ComputedHeight / trackHeight;
+
                 VegBorder border = new VegBorder(width, height);
                 border.Track = track;
+                // border.Margin = new VegThickness(10, 10, 10, 10);
                 border.Generate();
             }
         }
@@ -107,7 +119,7 @@ namespace VegGridLayouter.Core
     }
 
     // 子元素
-    public class GridChild
+    public class GridChild : VegElement
     {
         public int Row { get; set; }
         public int Column { get; set; }

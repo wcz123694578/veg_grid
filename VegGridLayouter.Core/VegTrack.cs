@@ -38,7 +38,7 @@ namespace VegGridLayouter.Core
             get { return height; }
             set
             {
-                width = value;
+                height = value;
                 this.VegasTrack.TrackMotion.MotionKeyframes[0].Height = value;
             }
         }
@@ -50,7 +50,7 @@ namespace VegGridLayouter.Core
             get { return alpha; }
             set
             {
-                width = value;
+                alpha = value;
                 this.VegasTrack.CompositeLevel = (float)value;
             }
         }
@@ -67,6 +67,7 @@ namespace VegGridLayouter.Core
             }
         }
 
+        public override Effect maskEffect { get; set; }
 
         public VideoTrack VegasTrack { get; set; }
     }

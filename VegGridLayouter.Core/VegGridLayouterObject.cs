@@ -15,5 +15,10 @@ namespace VegGridLayouter.Core
         public Vegas CurVegas { get; set; }
         public Project CurProject { get; set; }
         public VegTrack Track { get; set; }
+
+        public virtual Effect maskEffect {
+            get;
+            set;
+        }
     }
 }
