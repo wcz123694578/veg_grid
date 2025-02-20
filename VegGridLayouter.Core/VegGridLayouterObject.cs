@@ -1,4 +1,5 @@
 ﻿using ScriptPortal.Vegas;
+using System.Xml.Serialization;
 
 namespace VegGridLayouter.Core
 {
@@ -11,11 +12,14 @@ namespace VegGridLayouter.Core
         }
 
         
-
+        [XmlIgnore]
         public Vegas CurVegas { get; set; }
+        [XmlIgnore]
         public Project CurProject { get; set; }
+        [XmlIgnore]
         public VegTrack Track { get; set; }
 
+        [XmlIgnore]
         public virtual Effect maskEffect {
             get;
             set;

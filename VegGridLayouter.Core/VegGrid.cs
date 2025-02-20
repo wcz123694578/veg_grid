@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using VegGridLayouter.Core.Element;
 
 namespace VegGridLayouter.Core
@@ -19,16 +20,16 @@ namespace VegGridLayouter.Core
         public void CalculateLayout(int availableWidth, int availableHeight)
         {
             /// 计算行列的实际尺寸
-            int[] rowHeights = DistributeSizes(RowDefinitions, availableHeight);
-            int[] columnWidths = DistributeSizes(ColumnDefinitions, availableWidth);
+            double[] rowHeights = DistributeSizes(RowDefinitions, availableHeight);
+            double[] columnWidths = DistributeSizes(ColumnDefinitions, availableWidth);
 
             // 计算子元素的布局
             foreach (var child in Children)
             {
-                int x = columnWidths.Take(child.Column).Sum();
-                int y = rowHeights.Take(child.Row).Sum();
-                int width = columnWidths.Skip(child.Column).Take(child.ColumnSpan).Sum();
-                int height = rowHeights.Skip(child.Row).Take(child.RowSpan).Sum();
+                double x = columnWidths.Take(child.Column).Sum();
+                double y = rowHeights.Take(child.Row).Sum();
+                double width = columnWidths.Skip(child.Column).Take(child.ColumnSpan).Sum();
+                double height = rowHeights.Skip(child.Row).Take(child.RowSpan).Sum();
 
                 child.ComputedX = x;
                 child.ComputedY = y;
@@ -37,16 +38,16 @@ namespace VegGridLayouter.Core
             }
         }
 
-        private int[] DistributeSizes(IEnumerable<GridSizeDefinition> definitions, int availableSize)
+        private double[] DistributeSizes(IEnumerable<GridSizeDefinition> definitions, int availableSize)
         {
             var defList = definitions.ToList();
 
             int totalFixed = definitions.Where(d => d.Type == GridSizeType.Fixed).Sum(d => d.Value);
             int autoCount = definitions.Count(d => d.Type == GridSizeType.Auto);
             int starSum = definitions.Where(d => d.Type == GridSizeType.Star).Sum(d => d.Value);
-            int remaining = availableSize - totalFixed;
+            double remaining = availableSize - totalFixed;
 
-            int[] sizes = new int[defList.Count];
+            double[] sizes = new double[defList.Count];
 
             for (int i = 0; i < defList.Count; i++)
             {
@@ -61,7 +62,7 @@ namespace VegGridLayouter.Core
                         throw new ArgumentException("还没实现Auto类尺寸");
                         break;
                     case GridSizeType.Star:
-                        sizes[i] = (int)(remaining * (defList[i].Value / (float)starSum));
+                        sizes[i] = (remaining * (defList[i].Value / (float)starSum));
                         break;
                 }
             }
@@ -76,8 +77,21 @@ namespace VegGridLayouter.Core
 
             foreach (var item in Children)
             {
-                double trackWidth = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth) : (item.ComputedHeight * (width / height));
-                double trackHeight = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth * (height / width)) : (item.ComputedHeight);
+                //double trackWidth = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth) : (item.ComputedHeight * (width / height));
+                //double trackHeight = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth * (height / width)) : (item.ComputedHeight);
+
+                double trackWidth = 0, trackHeight = 0;
+                if (/*item.ComputedWidth > item.ComputedHeight || */item.ComputedWidth * (height / width) > item.ComputedHeight)
+                {
+                    trackWidth = item.ComputedWidth;
+                    trackHeight = item.ComputedWidth * (height / width);
+                }
+                else
+                {
+                    trackWidth = item.ComputedHeight * (width / height);
+                    trackHeight = item.ComputedHeight;
+                }
+
                 VegTrack track = new VegTrack(
                     CurVegas.Project.AddVideoTrack(),
                     trackWidth, trackHeight
@@ -107,7 +121,9 @@ namespace VegGridLayouter.Core
 
     public abstract class GridSizeDefinition
     {
+        [XmlAttribute]
         public GridSizeType Type { get; set; }
+        [XmlAttribute]
         public int Value { get; set; }
     }
 
@@ -121,14 +137,18 @@ namespace VegGridLayouter.Core
     // 子元素
     public class GridChild : VegElement
     {
+        [XmlAttribute]
         public int Row { get; set; }
+        [XmlAttribute]
         public int Column { get; set; }
+        [XmlAttribute]
         public int RowSpan { get; set; } = 1;
+        [XmlAttribute]
         public int ColumnSpan { get; set; } = 1;
 
-        public int ComputedX { get; set; }
-        public int ComputedY { get; set; }
-        public int ComputedWidth { get; set; }
-        public int ComputedHeight { get; set; }
+        public double ComputedX { get; set; }
+        public double ComputedY { get; set; }
+        public double ComputedWidth { get; set; }
+        public double ComputedHeight { get; set; }
     }
 }

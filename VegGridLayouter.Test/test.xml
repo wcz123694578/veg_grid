@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VegGrid>
+  <RowDefinitions>
+    <RowDefinition Type="Fixed" Value="200"/>
+    <RowDefinition Type="Star" Value="1"/>
+    <RowDefinition Type="Star" Value="1"/>
+    <RowDefinition Type="Star" Value="1"/>
+  </RowDefinitions>
+  <ColumnDefinitions>
+    <ColumnDefinition Type="Star" Value="1"/>
+    <ColumnDefinition Type="Star" Value="2"/>
+    <ColumnDefinition Type="Star" Value="1"/>
+  </ColumnDefinitions>
+  <Children>
+    <GridChild Row="0"/>
+    <GridChild Row="1" Column="1" ColumnSpan="2"/>
+    <GridChild Row="2" Column="2"/>
+  </Children>
+</VegGrid>

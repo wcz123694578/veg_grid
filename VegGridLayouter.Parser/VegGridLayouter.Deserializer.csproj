@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B5947374-1A21-4A3C-850F-CD2CCDF1011F}</ProjectGuid>
+    <ProjectGuid>{3F16CE19-BA7F-4DBD-B05A-9929536BD56A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>VegGridLayouter.Test</RootNamespace>
-    <AssemblyName>VegGridLayouter.Test</AssemblyName>
+    <RootNamespace>VegGridLayouter.Parser</RootNamespace>
+    <AssemblyName>VegGridLayouter.Parser</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,12 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ScriptPortal.Vegas">
+    <Reference Include="ScriptPortal.Vegas, Version=17.0.0.353, Culture=neutral, PublicKeyToken=3cda94b1926e6fbc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\VegLayouter\Libs\ScriptPortal.Vegas.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntryPoint.cs" />
+    <Compile Include="VegXmlDeserializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -54,15 +53,6 @@
       <Project>{c299426d-a575-4c94-af06-70a67af9d9a8}</Project>
       <Name>VegGridLayouter.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VegGridLayouter.Parser\VegGridLayouter.Deserializer.csproj">
-      <Project>{3f16ce19-ba7f-4dbd-b05a-9929536bd56a}</Project>
-      <Name>VegGridLayouter.Deserializer</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
