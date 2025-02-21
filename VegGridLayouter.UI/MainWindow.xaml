@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VegGridLayouter.UI"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:behaviors="clr-namespace:VegGridLayouter.UI.Behaviors"
@@ -15,12 +16,15 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Margin="10">
             
-            <Button Content="生成" Command="{Binding GenerateCommand}"/>
+            <Button Content="生成" Command="{Binding GenerateCommand}" Width="100"/>
+            <Button Content="读取" Command="{Binding LoadCommand}" Width="100" Margin="10 0 0 0"/>
+            <Button Content="保存" Command="{Binding SaveCommand}" Width="100" Margin="10 0 0 0"/>
             <!--<TextBlock Text="{Binding Code}"/>-->
         </StackPanel>
         <avalonEdit:TextEditor  x:Name="TextEditor"
@@ -29,11 +33,27 @@
                                 FontSize="10pt"
                                 LineNumbersForeground="Black"
                                 ShowLineNumbers="True"
+                                TextChanged="TextEditor_TextChanged"
                                 Grid.Row="1">
             <i:Interaction.Behaviors>
-                <behaviors:AvalonEditBehavior CodeText="{Binding Code}"/>
+                <behaviors:AvalonEditBehavior CodeText="{Binding Code, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </i:Interaction.Behaviors>
+            <avalonEdit:TextEditor.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="全部折叠" x:Name="CloseMenuItem" Click="CloseMenuItem_Click"></MenuItem>
+                    <MenuItem Header="全部展开" x:Name="OpenMenuItem" Click="OpenMenuItem_Click"></MenuItem>
+                </ContextMenu>
+            </avalonEdit:TextEditor.ContextMenu>
         </avalonEdit:TextEditor>
-        
+        <TextBox    IsReadOnly="True" 
+                    Height="100" 
+                    Grid.Row="2" 
+                    Margin="10" 
+                    VerticalScrollBarVisibility="Visible"
+                    Text="{Binding Log, Mode=TwoWay}">
+            <i:Interaction.Behaviors>
+                <behaviors:LogBoxBehavior/>
+            </i:Interaction.Behaviors>
+        </TextBox>
     </Grid>
 </Window>

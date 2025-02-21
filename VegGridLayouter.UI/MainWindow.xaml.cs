@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using ICSharpCode.AvalonEdit.Folding;
+using System.IO;
 using System.Windows;
 using VegGridLayouter.Core;
 using VegGridLayouter.Parser;
+using VegGridLayouter.UI.ViewModels;
 
 namespace VegGridLayouter.UI
 {
@@ -10,9 +12,14 @@ namespace VegGridLayouter.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private FoldingManager foldingManager = null;
+        XmlFoldingStrategy foldingStrategy = new XmlFoldingStrategy();
+
         public MainWindow()
         {
             InitializeComponent();
+            ICSharpCode.AvalonEdit.Search.SearchPanel.Install(TextEditor);
+            foldingManager = FoldingManager.Install(TextEditor.TextArea);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -27,6 +34,36 @@ namespace VegGridLayouter.UI
             //grid.CalculateLayout(width, height);
 
             //grid.Generate();
+        }
+
+        private void TextEditor_TextChanged(object sender, System.EventArgs e)
+        {
+            if (foldingManager == null) return;
+            foldingStrategy.UpdateFoldings(foldingManager, TextEditor.Document);
+        }
+
+        private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (foldingManager == null) return;
+            var isFrist = true;
+            foreach (var item in foldingManager.AllFoldings)
+            {
+                if (isFrist)
+                {
+                    isFrist = false;
+                    continue;
+                }
+                item.IsFolded = true;
+            }
+        }
+
+        private void OpenMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (foldingManager == null) return;
+            foreach (var item in foldingManager.AllFoldings)
+            {
+                item.IsFolded = false;
+            }
         }
     }
 }
