@@ -26,6 +26,22 @@ namespace VegGridLayouter.Core
         {
             // return videoEvent.Effects.AddEffect(plugIn);
             return track.VegasTrack.Effects.AddEffect(plugIn);
+
+            
+        }
+
+        public static VideoTrack AppendTrack(Vegas curVegas)
+        {
+            VideoTrack videoTrack = new VideoTrack(curVegas.Project.Tracks.Count);
+            curVegas.Project.Tracks.Add(videoTrack);
+            return videoTrack;
+        }
+
+        public static VideoTrack AppendTrack(Vegas curVegas, string name)
+        {
+            VideoTrack videoTrack = new VideoTrack(curVegas.Project.Tracks.Count, name);
+            curVegas.Project.Tracks.Add(videoTrack);
+            return videoTrack;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace VegGridLayouter.Core
 {
@@ -50,6 +51,8 @@ namespace VegGridLayouter.Core
             }
         }
 
+        internal int Level { get; set; }
+
         public VegThickness Margin { get; set; } = new VegThickness();        // 内边距
 
         // 目前Generate放在此处十分不合理
@@ -57,6 +60,26 @@ namespace VegGridLayouter.Core
         {
 
         }
+
+        [XmlAttribute]
+        public int Row { get; set; }
+        [XmlAttribute]
+        public int Column { get; set; }
+        [XmlAttribute]
+        public int RowSpan { get; set; } = 1;
+        [XmlAttribute]
+        public int ColumnSpan { get; set; } = 1;
+
+        internal double ComputedX { get; set; }
+        internal double ComputedY { get; set; }
+        internal double ComputedWidth { get; set; }
+        internal double ComputedHeight { get; set; }
+
+        internal double TempWidth { get; set; }
+        internal double TempHeight { get; set; }
+
+        //internal double OffsetX { get; set; }
+        //internal double OffsetY { get; set; }
     }
 
     public class VegThickness

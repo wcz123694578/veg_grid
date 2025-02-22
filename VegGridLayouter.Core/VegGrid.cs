@@ -11,14 +11,50 @@ namespace VegGridLayouter.Core
     {
         public List<RowDefinition> RowDefinitions { get; } = new List<RowDefinition>();
         public List<ColumnDefinition> ColumnDefinitions { get; } = new List<ColumnDefinition>();
-        public List<GridChild> Children = new List<GridChild>();
+        // public List<GridChild> Children = new List<GridChild>();
+        public VegGridCollection Children { get; set; }
+        private bool _isLeaf;
+
+
+
+        public VegGrid()
+        {
+            Children = new VegGridCollection(this);
+            Level = 0;
+        }
+
+
 
         public void AddRow(RowDefinition row) => RowDefinitions.Add(row);
         public void AddColumn(ColumnDefinition column) => ColumnDefinitions.Add(column);
-        public void AddChild(GridChild child) => Children.Add(child);
-
-        public void CalculateLayout(int availableWidth, int availableHeight)
+        public void AddChild(VegGrid child)
         {
+            // Children.Add(child);
+            child.Parent = this;
+            UpdateChildLevels(child, this.Level + 1);
+        }
+
+        /// 递归更新 `Level`
+        private void UpdateChildLevels(VegGrid node, int level)
+        {
+            node.Level = level;
+            foreach (var subChild in node.Children)
+            {
+                UpdateChildLevels(subChild, level + 1);
+            }
+        }
+
+        public void CalculateLayout(double availableWidth, double availableHeight)
+        {
+            if (this.Level == 0)
+            {
+                this.ComputedWidth = CurProject.Video.Width;
+                this.ComputedHeight = CurProject.Video.Height;
+                this.ComputedX = 0;
+                this.ComputedY = 0;
+                //this.OffsetX = this.OffsetY = 0;
+            }
+
             /// 计算行列的实际尺寸
             double[] rowHeights = DistributeSizes(RowDefinitions, availableHeight);
             double[] columnWidths = DistributeSizes(ColumnDefinitions, availableWidth);
@@ -35,10 +71,13 @@ namespace VegGridLayouter.Core
                 child.ComputedY = y;
                 child.ComputedWidth = width;
                 child.ComputedHeight = height;
+
+                //child.OffsetX = this.OffsetX + child.ComputedX;
+                //child.OffsetY = this.OffsetY + child.ComputedY;
             }
         }
 
-        private double[] DistributeSizes(IEnumerable<GridSizeDefinition> definitions, int availableSize)
+        private double[] DistributeSizes(IEnumerable<GridSizeDefinition> definitions, double availableSize)
         {
             var defList = definitions.ToList();
 
@@ -70,48 +109,120 @@ namespace VegGridLayouter.Core
             return sizes;
         }
 
+        private List<VideoTrack> _tempChildList = new List<VideoTrack>();
+
         public override void Generate()
         {
             double width = CurProject.Video.Width;
             double height = CurProject.Video.Height;
 
-            foreach (var item in Children)
-            {
-                //double trackWidth = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth) : (item.ComputedHeight * (width / height));
-                //double trackHeight = (item.ComputedWidth > item.ComputedHeight) ? (item.ComputedWidth * (height / width)) : (item.ComputedHeight);
+            double trackWidth = 1920, trackHeight = 1080;
 
-                double trackWidth = 0, trackHeight = 0;
-                if (/*item.ComputedWidth > item.ComputedHeight || */item.ComputedWidth * (height / width) > item.ComputedHeight)
+            if (this.Level == 0)
+            {
+                CalculateLayout(width, height);
+                TempWidth = width;
+                TempHeight = height;
+            }
+            else
+            {
+                if (this.ComputedWidth > this.ComputedHeight * (width / height))
                 {
-                    trackWidth = item.ComputedWidth;
-                    trackHeight = item.ComputedWidth * (height / width);
+                    TempWidth = width;
+                    TempHeight = width * (this.ComputedHeight / this.ComputedWidth);
                 }
                 else
                 {
-                    trackWidth = item.ComputedHeight * (width / height);
-                    trackHeight = item.ComputedHeight;
+                    TempWidth = height * (this.ComputedWidth / this.ComputedHeight);
+                    TempHeight = height;
                 }
+                // CalculateLayout(this.ComputedWidth, this.ComputedHeight);
+                CalculateLayout(TempWidth, TempHeight);
+            }
 
-                VegTrack track = new VegTrack(
-                    CurVegas.Project.AddVideoTrack(),
-                    trackWidth, trackHeight
-                );
-                track.Position = new VegPosition(
-                    -width / 2 + item.ComputedX + item.ComputedWidth / 2,
-                    height / 2 - item.ComputedY - item.ComputedHeight / 2);
+            if (this.ComputedWidth * (height / width) > this.ComputedHeight)
+            {
+                trackWidth = this.ComputedWidth;
+                trackHeight = this.ComputedWidth * (height / width);
+            }
+            else
+            {
+                trackWidth = this.ComputedHeight * (width / height);
+                trackHeight = this.ComputedHeight;
+            }
+
+            VideoTrack videoTrack;
+
+            videoTrack = VegTrackHelper.AppendTrack(CurVegas, $"{this.Row} - {this.Column}");
+            videoTrack.CompositeNestingLevel = this.Level;
+
+            if (!(Children.Count == 0))
+            {
+                VegTrack track = new VegTrack(videoTrack);
+
+                VideoTrack tempChild = VegTrackHelper.AppendTrack(CurVegas, "tempChild");
+                tempChild.CompositeNestingLevel = this.Level + 1;
+                _tempChildList.Add(tempChild);
+
+                track.SetParentSize(trackHeight, trackHeight);
+                //track.ParentPosition = new VegPosition(
+                //    -width / 2 + this.ComputedX + this.ComputedWidth / 2,
+                //    height / 2 - this.ComputedY - this.ComputedHeight / 2
+                //);
+
+                track.ParentPosition = new VegPosition(
+                    (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX),
+                    (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY));
 
                 PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
                 OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
                 OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
-                widthParameter.Value = item.ComputedWidth / trackWidth;
-                heightParameter.Value = item.ComputedHeight / trackHeight;
+                widthParameter.Value = this.ComputedWidth / trackWidth;
+                heightParameter.Value = this.ComputedHeight / trackHeight;
 
-                VegBorder border = new VegBorder(width, height);
+                foreach (var item in Children)
+                {
+                    item.Generate();
+                }
+            }
+
+            //foreach (var item in Children)
+            //{
+
+            else
+            {
+
+                
+
+                VegTrack track = new VegTrack(
+                    videoTrack,
+                    trackWidth, trackHeight
+                );
+                //track.Position = new VegPosition(
+                //    -trackWidth / 2 + this.ComputedX + this.ComputedWidth / 2,
+                //    trackHeight / 2 - this.ComputedY - this.ComputedHeight / 2);
+
+                track.Position = new VegPosition(
+                    (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX),
+                    (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY));
+
+                PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
+                this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
+
+                OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
+                OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
+                widthParameter.Value = this.ComputedWidth / trackWidth;
+                heightParameter.Value = this.ComputedHeight / trackHeight;
+
+                Random ran = new Random();
+                VegBorder border = new VegBorder(width, height, new Visual.VegColor(ran.Next(256), ran.Next(256), ran.Next(256), 1));
                 border.Track = track;
                 // border.Margin = new VegThickness(10, 10, 10, 10);
                 border.Generate();
+            //}
+
             }
         }
     }
@@ -150,5 +261,21 @@ namespace VegGridLayouter.Core
         public double ComputedY { get; set; }
         public double ComputedWidth { get; set; }
         public double ComputedHeight { get; set; }
+    }
+
+    public class VegGridCollection : List<VegGrid>
+    {
+        private VegGrid _parent;
+
+        public VegGridCollection(VegGrid parent)
+        {
+            _parent = parent;
+        }
+
+        public new void Add(VegGrid child)
+        {
+            base.Add(child);
+            _parent.AddChild(child);
+        }
     }
 }

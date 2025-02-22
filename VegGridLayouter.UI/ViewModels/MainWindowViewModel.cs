@@ -89,8 +89,6 @@ namespace VegGridLayouter.UI.ViewModels
                 int width = grid.CurProject.Video.Width;
                 int height = grid.CurProject.Video.Height;
 
-                grid.CalculateLayout(width, height);
-
                 grid.Generate();
                 debugXml("生成完毕！");
                 MessageBox.Show("生成完毕！");

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.UI", "VegGr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Deserializer", "VegGridLayouter.Parser\VegGridLayouter.Deserializer.csproj", "{3F16CE19-BA7F-4DBD-B05A-9929536BD56A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Test", "VegGridLayouter.Test\VegGridLayouter.Test.csproj", "{FB64ED12-5DC8-4785-8292-90E29763B5F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Console", "VegGridLayouter.Console\VegGridLayouter.Console.csproj", "{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{3F16CE19-BA7F-4DBD-B05A-9929536BD56A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F16CE19-BA7F-4DBD-B05A-9929536BD56A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F16CE19-BA7F-4DBD-B05A-9929536BD56A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB64ED12-5DC8-4785-8292-90E29763B5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB64ED12-5DC8-4785-8292-90E29763B5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB64ED12-5DC8-4785-8292-90E29763B5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB64ED12-5DC8-4785-8292-90E29763B5F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
