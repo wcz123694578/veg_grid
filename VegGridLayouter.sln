@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Deserialize
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Test", "VegGridLayouter.Test\VegGridLayouter.Test.csproj", "{FB64ED12-5DC8-4785-8292-90E29763B5F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.Console", "VegGridLayouter.Console\VegGridLayouter.Console.csproj", "{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VegGridLayouter.ConsoleTest", "VegGridLayouter.Console\VegGridLayouter.ConsoleTest.csproj", "{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

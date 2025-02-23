@@ -77,6 +77,8 @@ namespace VegGridLayouter.Core
 
         internal double TempWidth { get; set; }
         internal double TempHeight { get; set; }
+        internal double TrackWidth { get; set; }
+        internal double TrackHeight { get; set; }
 
         //internal double OffsetX { get; set; }
         //internal double OffsetY { get; set; }

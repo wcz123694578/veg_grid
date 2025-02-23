@@ -52,6 +52,7 @@
     <Compile Include="Event\VegEvent.cs" />
     <Compile Include="Event\VegEventHelper.cs" />
     <Compile Include="Event\VegShape.cs" />
+    <Compile Include="GridSizeDefinition.cs" />
     <Compile Include="VegasManager.cs" />
     <Compile Include="VegElement.cs" />
     <Compile Include="VegGrid.cs" />

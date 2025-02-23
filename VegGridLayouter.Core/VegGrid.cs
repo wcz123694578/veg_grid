@@ -1,7 +1,9 @@
 ﻿using ScriptPortal.Vegas;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using VegGridLayouter.Core.Element;
 
@@ -9,13 +11,12 @@ namespace VegGridLayouter.Core
 {
     public class VegGrid : VegElement
     {
-        public List<RowDefinition> RowDefinitions { get; } = new List<RowDefinition>();
-        public List<ColumnDefinition> ColumnDefinitions { get; } = new List<ColumnDefinition>();
+        public List<RowDefinition> RowDefinitions { get; set; } = new List<RowDefinition>();
+
+        public List<ColumnDefinition> ColumnDefinitions { get; set; } = new List<ColumnDefinition>();
+
         // public List<GridChild> Children = new List<GridChild>();
         public VegGridCollection Children { get; set; }
-        private bool _isLeaf;
-
-
 
         public VegGrid()
         {
@@ -23,11 +24,9 @@ namespace VegGridLayouter.Core
             Level = 0;
         }
 
-
-
         public void AddRow(RowDefinition row) => RowDefinitions.Add(row);
         public void AddColumn(ColumnDefinition column) => ColumnDefinitions.Add(column);
-        public void AddChild(VegGrid child)
+        public void SetChild(VegGrid child)
         {
             // Children.Add(child);
             child.Parent = this;
@@ -109,14 +108,11 @@ namespace VegGridLayouter.Core
             return sizes;
         }
 
-        private List<VideoTrack> _tempChildList = new List<VideoTrack>();
 
         public override void Generate()
         {
             double width = CurProject.Video.Width;
             double height = CurProject.Video.Height;
-
-            double trackWidth = 1920, trackHeight = 1080;
 
             if (this.Level == 0)
             {
@@ -136,19 +132,19 @@ namespace VegGridLayouter.Core
                     TempWidth = height * (this.ComputedWidth / this.ComputedHeight);
                     TempHeight = height;
                 }
-                // CalculateLayout(this.ComputedWidth, this.ComputedHeight);
+
                 CalculateLayout(TempWidth, TempHeight);
             }
 
             if (this.ComputedWidth * (height / width) > this.ComputedHeight)
             {
-                trackWidth = this.ComputedWidth;
-                trackHeight = this.ComputedWidth * (height / width);
+                TrackWidth = this.ComputedWidth;
+                TrackHeight = this.ComputedWidth * (height / width);
             }
             else
             {
-                trackWidth = this.ComputedHeight * (width / height);
-                trackHeight = this.ComputedHeight;
+                TrackWidth = this.ComputedHeight * (width / height);
+                TrackHeight = this.ComputedHeight;
             }
 
             VideoTrack videoTrack;
@@ -162,13 +158,8 @@ namespace VegGridLayouter.Core
 
                 VideoTrack tempChild = VegTrackHelper.AppendTrack(CurVegas, "tempChild");
                 tempChild.CompositeNestingLevel = this.Level + 1;
-                _tempChildList.Add(tempChild);
 
-                track.SetParentSize(trackHeight, trackHeight);
-                //track.ParentPosition = new VegPosition(
-                //    -width / 2 + this.ComputedX + this.ComputedWidth / 2,
-                //    height / 2 - this.ComputedY - this.ComputedHeight / 2
-                //);
+                track.SetParentSize(TrackHeight, TrackHeight);
 
                 track.ParentPosition = new VegPosition(
                     (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX),
@@ -177,10 +168,7 @@ namespace VegGridLayouter.Core
                 PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
-                OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
-                OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
-                widthParameter.Value = this.ComputedWidth / trackWidth;
-                heightParameter.Value = this.ComputedHeight / trackHeight;
+                modifyMaskEffect(maskEffect);
 
                 foreach (var item in Children)
                 {
@@ -188,21 +176,12 @@ namespace VegGridLayouter.Core
                 }
             }
 
-            //foreach (var item in Children)
-            //{
-
             else
             {
-
-                
-
                 VegTrack track = new VegTrack(
                     videoTrack,
-                    trackWidth, trackHeight
+                    TrackWidth, TrackHeight
                 );
-                //track.Position = new VegPosition(
-                //    -trackWidth / 2 + this.ComputedX + this.ComputedWidth / 2,
-                //    trackHeight / 2 - this.ComputedY - this.ComputedHeight / 2);
 
                 track.Position = new VegPosition(
                     (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX),
@@ -211,56 +190,41 @@ namespace VegGridLayouter.Core
                 PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
-                OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
-                OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
-                widthParameter.Value = this.ComputedWidth / trackWidth;
-                heightParameter.Value = this.ComputedHeight / trackHeight;
+                modifyMaskEffect(maskEffect);
 
                 Random ran = new Random();
-                VegBorder border = new VegBorder(width, height, new Visual.VegColor(ran.Next(256), ran.Next(256), ran.Next(256), 1));
+                VegBorder border = new VegBorder(
+                    width, height, 
+                    new Visual.VegColor(
+                        (Level % 3 == 0) ? ran.Next(256) : 0, 
+                        (Level % 3 == 1) ? ran.Next(256) : 0, 
+                        (Level % 3 == 2) ? ran.Next(256) : 0, 
+                        1
+                    )
+                );
                 border.Track = track;
                 // border.Margin = new VegThickness(10, 10, 10, 10);
                 border.Generate();
-            //}
 
             }
         }
+
+        private void modifyMaskEffect(Effect maskEffect)
+        {
+            OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
+            OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
+            widthParameter.Value = this.ComputedWidth / TrackWidth;
+            heightParameter.Value = this.ComputedHeight / TrackHeight;
+        }
     }
 
-    public class RowDefinition : GridSizeDefinition { }
-    public class ColumnDefinition : GridSizeDefinition { }
-
-    public abstract class GridSizeDefinition
-    {
-        [XmlAttribute]
-        public GridSizeType Type { get; set; }
-        [XmlAttribute]
-        public int Value { get; set; }
-    }
+    
 
     public enum GridSizeType
     {
         Fixed,
         Auto,
         Star
-    }
-
-    // 子元素
-    public class GridChild : VegElement
-    {
-        [XmlAttribute]
-        public int Row { get; set; }
-        [XmlAttribute]
-        public int Column { get; set; }
-        [XmlAttribute]
-        public int RowSpan { get; set; } = 1;
-        [XmlAttribute]
-        public int ColumnSpan { get; set; } = 1;
-
-        public double ComputedX { get; set; }
-        public double ComputedY { get; set; }
-        public double ComputedWidth { get; set; }
-        public double ComputedHeight { get; set; }
     }
 
     public class VegGridCollection : List<VegGrid>
@@ -275,7 +239,7 @@ namespace VegGridLayouter.Core
         public new void Add(VegGrid child)
         {
             base.Add(child);
-            _parent.AddChild(child);
+            _parent.SetChild(child);
         }
     }
 }

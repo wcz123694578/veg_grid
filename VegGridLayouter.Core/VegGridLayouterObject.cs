@@ -7,8 +7,10 @@ namespace VegGridLayouter.Core
     {
         public VegGridLayouterObject()
         {
+//#if UI_DEBUG
             this.CurVegas = VegasManager.Instance;
             this.CurProject = this.CurVegas.Project;
+//#endif
         }
 
         

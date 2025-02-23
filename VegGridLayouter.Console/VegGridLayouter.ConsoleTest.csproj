@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2ABD7F6B-D10B-44DF-9CAC-AA8C7E41AE82}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>VegGridLayouter.Console</RootNamespace>
-    <AssemblyName>VegGridLayouter.Console</AssemblyName>
+    <RootNamespace>VegGridLayouter.ConsoleTest</RootNamespace>
+    <AssemblyName>VegGridLayouter.ConsoleTest</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;LIBRARY_DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ScriptPortal.Vegas">
+      <HintPath>..\..\VegLayouter\Libs\ScriptPortal.Vegas.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +51,21 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VegGridLayouter.Core\VegGridLayouter.Core.csproj">
+      <Project>{c299426d-a575-4c94-af06-70a67af9d9a8}</Project>
+      <Name>VegGridLayouter.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VegGridLayouter.Parser\VegGridLayouter.Deserializer.csproj">
+      <Project>{3f16ce19-ba7f-4dbd-b05a-9929536bd56a}</Project>
+      <Name>VegGridLayouter.Deserializer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
