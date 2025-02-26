@@ -1,22 +1,17 @@
-﻿using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Folding;
+﻿using ICSharpCode.AvalonEdit.Folding;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Xml.Linq;
 using VegGridLayouter.Core;
 using VegGridLayouter.Parser;
-using VegGridLayouter.UI.Models;
 
 namespace VegGridLayouter.UI.ViewModels
 {
@@ -67,17 +62,9 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
-        private TreeViewItemModel _selectedItem;
-        public TreeViewItemModel SelectedItem
-        {
-            get { return _selectedItem; }
-            set { SetProperty(ref _selectedItem, value); }
-        }
+        private ObservableCollection<TreeViewItemViewModel> _treeItems;
 
-
-        private ObservableCollection<TreeViewItemModel> _treeItems;
-
-        public ObservableCollection<TreeViewItemModel> TreeItems
+        public ObservableCollection<TreeViewItemViewModel> TreeItems
         {
             get { return _treeItems; }
             set {
@@ -86,7 +73,19 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
-        private VegGrid _internalGrid = new VegGrid();
+        private TreeViewItemViewModel _selectedTreeItem;
+
+        public TreeViewItemViewModel SelectedTreeItem
+        {
+            get { return _selectedTreeItem; }
+            set
+            {
+                _selectedTreeItem = value;
+                RaisePropertyChanged(nameof(SelectedTreeItem));
+            }
+        }
+
+        // private VegGrid _internalGrid = new VegGrid();
 
         private void LoadXmlToTreeView()
         {
@@ -101,7 +100,7 @@ namespace VegGridLayouter.UI.ViewModels
 
                 XDocument xdoc = XDocument.Parse(this._code);
 
-                TreeItems = new ObservableCollection<TreeViewItemModel>(ParseXml(xdoc.Root));
+                TreeItems = new ObservableCollection<TreeViewItemViewModel>(ParseXml(xdoc.Root));
 
                 ErrorMessage = string.Empty;
                 CanDisplay = false;
@@ -113,9 +112,9 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
-        private List<TreeViewItemModel> ParseXml(XElement rootElement)
+        private List<TreeViewItemViewModel> ParseXml(XElement rootElement, TreeViewItemViewModel parent = null)
         {
-            var items = new List<TreeViewItemModel>();
+            var items = new List<TreeViewItemViewModel>();
 
 
 
@@ -145,12 +144,13 @@ namespace VegGridLayouter.UI.ViewModels
                     default:
                         break;
                 }
-                var item = new TreeViewItemModel(this)
+                var item = new TreeViewItemViewModel(this, _aggregator)
                 {
                     Header = header,
                     Name = element.Name.LocalName,
                     Type = element.Attribute("Type")?.Value,
                     Value = element.Attribute("Value")?.Value,
+                    Parent = parent
                 };
 
                 item.SetAttributes(element);
@@ -167,8 +167,10 @@ namespace VegGridLayouter.UI.ViewModels
 
                 if (element.HasElements)
                 {
-                    item.Children = new ObservableCollection<TreeViewItemModel>(ParseXml(element));
+                    item.Children = new ObservableCollection<TreeViewItemViewModel>(ParseXml(element, item));
                 }
+
+                
 
                 items.Add(item);
             }
@@ -186,7 +188,7 @@ namespace VegGridLayouter.UI.ViewModels
             return new XDocument(rootElement);
         }
 
-        private XElement SerializeTreeItem(TreeViewItemModel item)
+        private XElement SerializeTreeItem(TreeViewItemViewModel item)
         {
             XElement element = new XElement(item.Name);
             if (item.Attributes != null && item.Attributes.Count > 0)
@@ -210,13 +212,17 @@ namespace VegGridLayouter.UI.ViewModels
             return element;
         }
 
-        public MainWindowViewModel()
+        private IEventAggregator _aggregator;
+
+        public MainWindowViewModel(IEventAggregator eventAggregator)
         {
             GenerateCommand = new DelegateCommand(generate);
             LoadCommand = new DelegateCommand(load);
             SaveCommand = new DelegateCommand(save);
 
-            
+            this._aggregator = eventAggregator;
+
+            SelectedTreeItem = new TreeViewItemViewModel(this, eventAggregator);
 
             LoadLog();
         }
@@ -256,18 +262,23 @@ namespace VegGridLayouter.UI.ViewModels
         private void generate()
         {
             // FileStream fs = File.Open("test.xml", FileMode.Open);
+            VegGrid grid = new VegGrid();
+
             try
             {
                 debugXml("解析XML...");
 
-                _internalGrid = VegXmlDeserializer.DeserializeXmlString(this._code);
+                grid = VegXmlDeserializer.DeserializeXmlString(this._code);
 
-                int width = _internalGrid.CurProject.Video.Width;
-                int height = _internalGrid.CurProject.Video.Height;
 
-                _internalGrid.Generate();
+                int width = grid.CurProject.Video.Width;
+                int height = grid.CurProject.Video.Height;
+
+                grid.Generate();
+                VegasManager.State = ScriptStateType.WaitToGenerate;
+
                 debugXml("生成完毕！");
-                MessageBox.Show("生成完毕！");
+                
                 
             }
             catch (Exception ex)

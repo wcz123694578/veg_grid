@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.AvalonEdit.Folding;
+using Prism.Events;
 using System.IO;
 using System.Windows;
 using VegGridLayouter.Core;
@@ -18,22 +19,12 @@ namespace VegGridLayouter.UI
         public MainWindow()
         {
             InitializeComponent();
+
+            MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(StaticVariable.eventAggregator);
+            this.DataContext = mainWindowViewModel;
+
             ICSharpCode.AvalonEdit.Search.SearchPanel.Install(TextEditor);
             foldingManager = FoldingManager.Install(TextEditor.TextArea);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            //VegGrid grid = new VegGrid();
-            //FileStream fs = File.Open("test.xml", FileMode.Open);
-            //grid = VegXmlDeserializer.DeserializeXml(fs);
-
-            //int width = grid.CurProject.Video.Width;
-            //int height = grid.CurProject.Video.Height;
-
-            //grid.CalculateLayout(width, height);
-
-            //grid.Generate();
         }
 
         private void TextEditor_TextChanged(object sender, System.EventArgs e)
