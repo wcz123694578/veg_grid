@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<VegGrid>
+  <RowDefinitions>
+    <RowDefinition Type="Fixed" Value="200"/>
+    <RowDefinition/>
+    <RowDefinition/>
+  </RowDefinitions>
+  <ColumnDefinitions>
+    <ColumnDefinition Type="Star" Value="2"/>
+    <ColumnDefinition Type="Star" Value="3"/>
+    <ColumnDefinition/>
+  </ColumnDefinitions>
+  <Children>
+    <VegGrid/>
+    <VegGrid Row="1" Column="1" ColumnSpan="2"/>
+    <VegGrid Row="2" Column="2"/>
+    <VegGrid Row="2" Column="1">
+      <RowDefinitions>
+        <RowDefinition Type="Star" Value="2"/>
+        <RowDefinition Type="Star" Value="1"/>
+      </RowDefinitions>
+      <ColumnDefinitions>
+        <ColumnDefinition Type="Star" Value="1"/>
+      </ColumnDefinitions>
+      <Children>
+        <VegGrid Row="0"/>
+        <VegGrid Row="1">
+          <RowDefinitions>
+            <RowDefinition Type="Star" Value="1"/>
+          </RowDefinitions>
+          <ColumnDefinitions>
+            <ColumnDefinition Type="Star" Value="2"/>
+            <ColumnDefinition Type="Star" Value="1"/>
+          </ColumnDefinitions>
+          <Children>
+            <VegGrid Column="0"/>
+            <VegGrid Column="1">
+              <RowDefinitions>
+                <RowDefinition Type="Star" Value="1"/>
+                <RowDefinition Type="Star" Value="2"/>
+              </RowDefinitions>
+              <ColumnDefinitions>
+                <ColumnDefinition Type="Star" Value="1"/>
+                <ColumnDefinition/>
+              </ColumnDefinitions>
+              <Children>
+                <VegGrid Row="0"/>
+                <VegGrid Row="1"/>
+              </Children>
+            </VegGrid>
+          </Children>
+        </VegGrid>
+      </Children>
+    </VegGrid>
+  </Children>
+</VegGrid>
