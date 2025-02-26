@@ -87,7 +87,6 @@
   <ItemGroup>
     <Compile Include="Behaviors\AvalonEditBehavior.cs" />
     <Compile Include="Behaviors\LogBoxBehavior.cs" />
-    <Compile Include="Bootstrapper.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Events\AddCheckedGridChildEvent.cs" />

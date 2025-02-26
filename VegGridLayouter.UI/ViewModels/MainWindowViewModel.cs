@@ -275,7 +275,6 @@ namespace VegGridLayouter.UI.ViewModels
                 int height = grid.CurProject.Video.Height;
 
                 grid.Generate();
-                VegasManager.State = ScriptStateType.WaitToGenerate;
 
                 debugXml("生成完毕！");
                 
