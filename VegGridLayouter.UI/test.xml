@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<VegGrid>
+<VegGrid Margin="100">
   <RowDefinitions>
     <RowDefinition Type="Fixed" Value="200"/>
     <RowDefinition/>
@@ -14,7 +14,7 @@
     <VegGrid/>
     <VegGrid Row="1" Column="1" ColumnSpan="2"/>
     <VegGrid Row="2" Column="2"/>
-    <VegGrid Row="2" Column="1">
+    <VegGrid Row="2" Column="1" Margin="100">
       <RowDefinitions>
         <RowDefinition Type="Star" Value="2"/>
         <RowDefinition Type="Star" Value="1"/>

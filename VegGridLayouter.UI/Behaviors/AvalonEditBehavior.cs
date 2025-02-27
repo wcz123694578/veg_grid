@@ -2,6 +2,7 @@
 using Microsoft.Xaml.Behaviors;
 using System;
 using System.Windows;
+using VegGridLayouter.UI.Events;
 
 namespace VegGridLayouter.UI.Behaviors
 {
@@ -46,7 +47,11 @@ namespace VegGridLayouter.UI.Behaviors
             if (sender is TextEditor textEditor)
             {
                 if (textEditor.Document != null)
+                {
                     CodeText = textEditor.Document.Text;
+                    if (StaticVariable.TreeViewState == StaticVariable.TreeViewStateType.Unlock_)
+                        StaticVariable.eventAggregator.GetEvent<LoadXmlToTreeViewEvent>().Publish(new LoadXmlToTreeViewEventModel());
+                }
             }
         }
 

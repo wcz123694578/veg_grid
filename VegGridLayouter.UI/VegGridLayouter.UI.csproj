@@ -87,18 +87,26 @@
   <ItemGroup>
     <Compile Include="Behaviors\AvalonEditBehavior.cs" />
     <Compile Include="Behaviors\LogBoxBehavior.cs" />
+    <Compile Include="Behaviors\TextBoxBehavior.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Events\AddCheckedGridChildEvent.cs" />
+    <Compile Include="Events\LoadXmlToTreeViewEvent.cs" />
     <Compile Include="Events\RowColumnMessageEvent.cs" />
+    <Compile Include="Events\SelectTreeViewItemEvent.cs" />
+    <Compile Include="Events\UpdateXmlEvent.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="StaticVariable.cs" />
+    <Compile Include="ViewModels\AddRowPopupControlViewModel.cs" />
     <Compile Include="ViewModels\SetRowColumnPopupViewModel.cs" />
     <Compile Include="ViewModels\TreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\AddRowPopupControl.xaml.cs">
+      <DependentUpon>AddRowPopupControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SetRowColumnPopup.xaml.cs">
       <DependentUpon>SetRowColumnPopup.xaml</DependentUpon>
     </Compile>
@@ -123,6 +131,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddRowPopupControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -12,6 +12,7 @@ using System.Windows;
 using System.Xml.Linq;
 using VegGridLayouter.Core;
 using VegGridLayouter.Parser;
+using VegGridLayouter.UI.Events;
 
 namespace VegGridLayouter.UI.ViewModels
 {
@@ -25,7 +26,6 @@ namespace VegGridLayouter.UI.ViewModels
             set {
                 _code = value;
                 RaisePropertyChanged(nameof(Code));
-                Task.Run(() => LoadXmlToTreeView());
             }
         }
 
@@ -86,6 +86,24 @@ namespace VegGridLayouter.UI.ViewModels
         }
 
         // private VegGrid _internalGrid = new VegGrid();
+        private enum treeViewUpdateStateType
+        {
+            updating,
+            finish
+        }
+
+        private ObservableCollection<TreeViewItemViewModel> _root;
+
+        public ObservableCollection<TreeViewItemViewModel> Root
+        {
+            get { return _root; }
+            set
+            {
+                _root = value;
+                RaisePropertyChanged(nameof(Root));
+            }
+        }
+
 
         private void LoadXmlToTreeView()
         {
@@ -100,7 +118,18 @@ namespace VegGridLayouter.UI.ViewModels
 
                 XDocument xdoc = XDocument.Parse(this._code);
 
-                TreeItems = new ObservableCollection<TreeViewItemViewModel>(ParseXml(xdoc.Root));
+                var rootItems = ParseXml(xdoc.Root);
+                TreeItems = new ObservableCollection<TreeViewItemViewModel>(rootItems);
+
+                Root = new ObservableCollection<TreeViewItemViewModel>()
+                {
+                    new TreeViewItemViewModel(this, _aggregator)
+                    {
+                        Children = TreeItems,
+                        Header = "网格",
+                        Name = "VegGrid"
+                    }
+                };
 
                 ErrorMessage = string.Empty;
                 CanDisplay = false;
@@ -112,9 +141,9 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
-        private List<TreeViewItemViewModel> ParseXml(XElement rootElement, TreeViewItemViewModel parent = null)
+        private ObservableCollection<TreeViewItemViewModel> ParseXml(XElement rootElement, TreeViewItemViewModel parent = null)
         {
-            var items = new List<TreeViewItemViewModel>();
+            var items = new ObservableCollection<TreeViewItemViewModel>();
 
 
 
@@ -155,14 +184,24 @@ namespace VegGridLayouter.UI.ViewModels
 
                 item.SetAttributes(element);
 
+                if (element.Name.LocalName == "Children"
+                    || element.Name.LocalName == "RowDefinitions"
+                    || element.Name.LocalName == "ColumnDefinitions")
+                {
+                    item.IsCollection = true;
+                    item.IsNotDefaultSet = false;
+                }
+
                 if (element.Name.LocalName == "Children")
                 {
                     item.IsGridRoot = true;
                 }
 
-                if (element.Name.LocalName == "VegGrid")
+                if (element.Name.LocalName == "VegGrid"
+                    || element.Name.LocalName == "RowDefinition"
+                    || element.Name.LocalName == "ColumnDefinition")
                 {
-                    item.IsGrid = true;
+                    item.IsChild = true;
                 }
 
                 if (element.HasElements)
@@ -220,11 +259,27 @@ namespace VegGridLayouter.UI.ViewModels
             LoadCommand = new DelegateCommand(load);
             SaveCommand = new DelegateCommand(save);
 
+            Code = "<VegGrid/>";
+
             this._aggregator = eventAggregator;
 
             SelectedTreeItem = new TreeViewItemViewModel(this, eventAggregator);
 
+            _aggregator.GetEvent<UpdateXmlEvent>().Subscribe(UpdateXmlEventProcesser);
+            _aggregator.GetEvent<LoadXmlToTreeViewEvent>().Subscribe(LoadXmlToTreeViewEventProcesser);
+
             LoadLog();
+        }
+
+        private void LoadXmlToTreeViewEventProcesser(LoadXmlToTreeViewEventModel obj)
+        {
+            LoadXmlToTreeView();
+        }
+
+        private void UpdateXmlEventProcesser(UpdateXmlEventModel obj)
+        {
+            //if (treeViewUpdateState == treeViewUpdateStateType.finish)
+            Code = UpdateXml().ToString();
         }
 
         private string logFileName = $@"{Environment.GetEnvironmentVariable("AppData")}\Vegas Pro\layouter_log.txt";

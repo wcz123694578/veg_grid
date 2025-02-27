@@ -86,9 +86,12 @@ namespace VegGridLayouter.UI.ViewModels
                 }
             }
 
-            foreach (var item in message.ExistedCells)
+            if (message.ExistedCells.Count > 0)
             {
-                Cells[(item.Row) * this.TotalColumnCount + item.Column].IsChecked = true;
+                foreach (var item in message.ExistedCells)
+                {
+                    Cells[(item.Row) * this.TotalColumnCount + item.Column].IsChecked = true;
+                }
             }
         }
 
@@ -137,22 +140,6 @@ namespace VegGridLayouter.UI.ViewModels
                             break;
                         }
                     }
-                    //else
-                    //{
-                    //    if (existedItem.IsChecked)
-                    //    {
-                    //        foreach (var item in treeItem.Children)
-                    //        {
-                    //            if (    Int32.Parse(item.Attributes.Find(a => a.Type.Equals("Row")).Value) == checkedItem.Row
-                    //                &&  Int32.Parse(item.Attributes.Find(a => a.Type.Equals("Column")).Value) == checkedItem.Column)
-                    //            {
-                    //                treeItem.Children.Remove(item);
-                    //                break;
-                    //            }
-                    //        }
-                    //    }
-                    //    flag = true; break;
-                    //}
                 }
 
                 else
@@ -178,7 +165,10 @@ namespace VegGridLayouter.UI.ViewModels
                                     }
                                 }
                                 if (deleteItem != null)
+                                {
                                     treeItem.Children.Remove(deleteItem);
+                                    //_internalMessage.Target.UpdateXml();
+                                }
                             }
                             
                         }
@@ -191,7 +181,7 @@ namespace VegGridLayouter.UI.ViewModels
 
                 treeItem.Children.Add(new TreeViewItemViewModel(_internalMessage.MainWindowViewModel, _aggregator)
                 {
-                    Attributes = new List<AttributeItem>()
+                    Attributes = new ObservableCollection<AttributeItem>()
                     {
                         new AttributeItem("Row", checkedItem.Row.ToString()),
                         new AttributeItem("Column", checkedItem.Column.ToString())
@@ -200,19 +190,11 @@ namespace VegGridLayouter.UI.ViewModels
                     Name = "VegGrid",
                     Parent = treeItem
                 });
+                
             }
-
-            _internalMessage.Target.UpdateXml();
-
-            //foreach (var item in Cells)
-            //{
-            //    if (item.IsChecked)
-            //    {
-            //        addMessage.CheckedCells.Add(item);
-            //    }
-            //}
-
-            //_aggregator.GetEvent<AddCheckedGridChildEvent>().Publish(addMessage);
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Lock_;
+            _aggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Unlock_;
         }
     }
 

@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xaml.Behaviors;
 using System.Windows.Controls;
+using VegGridLayouter.UI.Events;
 
 namespace VegGridLayouter.UI.Behaviors
 {
-    public class LogBoxBehavior : Behavior<TextBox>
+    public class TextBoxBehavior : Behavior<TextBox>
     {
         protected override void OnAttached()
         {
@@ -21,7 +22,9 @@ namespace VegGridLayouter.UI.Behaviors
         {
             if (sender is TextBox textBox)
             {
-                textBox.ScrollToEnd();
+                StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Lock_;
+                StaticVariable.eventAggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+                StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Unlock_;
             }
         }
     }

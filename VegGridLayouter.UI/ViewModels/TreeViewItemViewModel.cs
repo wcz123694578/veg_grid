@@ -2,18 +2,36 @@
 using Prism.Events;
 using Prism.Mvvm;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Linq;
 using VegGridLayouter.UI.Events;
 using VegGridLayouter.UI.ViewModels;
 
 namespace VegGridLayouter.UI.ViewModels
 {
-    public class AttributeItem
+    public class AttributeItem : BindableBase
     {
         public string Type { get; set; }
-        public string Value { get; set; }
+        private string _value;
+
+        private IEventAggregator _aggregator = StaticVariable.eventAggregator;
+
+        public string Value
+        {
+            get { return _value; }
+            set
+            {
+                _value = value;
+                RaisePropertyChanged(nameof(Value));
+
+                // _aggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+
+            }
+        }
 
         public AttributeItem(string type, string value)
         {
@@ -22,13 +40,26 @@ namespace VegGridLayouter.UI.ViewModels
         }
     }
 
-    public class TreeViewItemViewModel : BindableBase
+    public class TreeViewItemViewModel : BindableBase, IEnumerable<TreeViewItemViewModel>
     {
         public string Header { get; set; }
+
+        // 这几个没用了
         public string Value { get; set; }   // 标签的值
         public string Type { get; set; }    // 标签的类型
 
-        public List<AttributeItem> Attributes { get; set; } = new List<AttributeItem>();
+        private ObservableCollection<AttributeItem> _attributes = new ObservableCollection<AttributeItem>();
+
+        public ObservableCollection<AttributeItem> Attributes
+        {
+            get { return _attributes; }
+            set
+            {
+                _attributes = value;
+                RaisePropertyChanged(nameof(Attributes));
+            }
+        }
+
 
         public string Name { get; set; }
 
@@ -36,32 +67,60 @@ namespace VegGridLayouter.UI.ViewModels
         public ObservableCollection<TreeViewItemViewModel> Children
         {
             get { return _children; }
-            set { SetProperty(ref _children, value); }
+            set {
+                _children = value;
+                RaisePropertyChanged(nameof(Children));
+            }
         }
 
+
+        private bool _isCollection = false;
+
+        public bool IsCollection
+        {
+            get { return _isCollection; }
+            set {
+                _isCollection = value;
+                RaisePropertyChanged(nameof(IsCollection));
+            }
+        }
+
+        private bool _isChild = false;
+
+        public bool IsChild
+        {
+            get { return _isChild; }
+            set
+            {
+                _isChild = value;
+                RaisePropertyChanged(nameof(IsChild));
+            }
+        }
 
         private bool _isGridRoot = false;
 
         public bool IsGridRoot
         {
             get { return _isGridRoot; }
-            set {
+            set
+            {
                 _isGridRoot = value;
                 RaisePropertyChanged(nameof(IsGridRoot));
             }
         }
 
-        private bool _isGrid = false;
+        private bool _isNotDefaultSet = true;
 
-        public bool IsGrid
+        public bool IsNotDefaultSet
         {
-            get { return _isGrid; }
+            get { return _isNotDefaultSet; }
             set
             {
-                _isGrid = value;
-                RaisePropertyChanged(nameof(IsGrid));
+                _isNotDefaultSet = value;
+                RaisePropertyChanged(nameof(IsNotDefaultSet));
             }
         }
+
 
         private bool _isAddChildPopupOpen = false;
 
@@ -87,6 +146,18 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
+        private bool _isAddRowPopupOpen = false;
+
+        public bool IsAddRowPopupOpen
+        {
+            get { return _isAddRowPopupOpen; }
+            set
+            {
+                _isAddRowPopupOpen = value;
+                RaisePropertyChanged(nameof(IsAddRowPopupOpen));
+            }
+        }
+
 
         private readonly MainWindowViewModel _mainWindowViewModel;
         private readonly IEventAggregator _aggregator;
@@ -98,15 +169,18 @@ namespace VegGridLayouter.UI.ViewModels
             RemoveChildCommand = new DelegateCommand<TreeViewItemViewModel>(RemoveChild);
             ConfirmChildRowColumnCommand = new DelegateCommand(ConfirmChildRowColumn);
             SetRowColumnCommand = new DelegateCommand<TreeViewItemViewModel>(SetRowColumn);
+            SetDefaultCommand = new DelegateCommand<TreeViewItemViewModel>(SetDefault);
 
             this._aggregator = eventAggregator;
 
             _aggregator.GetEvent<AddCheckedGridChildEvent>().Subscribe(addCheckedGridChildrenProcess);
         }
 
+
         public DelegateCommand<TreeViewItemViewModel> AddChildCommand { get; private set; }
         public DelegateCommand<TreeViewItemViewModel> RemoveChildCommand { get; private set; }
         public DelegateCommand<TreeViewItemViewModel> SetRowColumnCommand { get; private set; }
+        public DelegateCommand<TreeViewItemViewModel> SetDefaultCommand { get; set; }
         public DelegateCommand ConfirmChildRowColumnCommand { get; set; }
 
         private int _childRow;
@@ -148,12 +222,20 @@ namespace VegGridLayouter.UI.ViewModels
 
         private void AddChild(TreeViewItemViewModel item)
         {
-            if (IsGridRoot)
+            _mainWindowViewModel.SelectedTreeItem = item;
+
+            if (item.Name == "RowDefinitions" || item.Name == "ColumnDefinitions")
+            {
+                item.IsAddRowPopupOpen = !item.IsAddRowPopupOpen;
+                _aggregator.GetEvent<SelectTreeViewItemEvent>().Publish(new SelectTreeViewItemEventModel(item));
+            }
+
+            if (this.Name == "Children")
             {
                 //var newItem = new TreeViewItemViewModel(_mainWindowViewModel) { Header = "网格", Name = "VegGrid" };
                 //Children.Add(newItem);
                 //_mainWindowViewModel.Code = _mainWindowViewModel.UpdateXml().ToString();
-                _mainWindowViewModel.SelectedTreeItem = item;
+                
                 item.ChildRow = 0;
                 item.ChildColumn = 0;
                 item.IsAddChildPopupOpen = !item.IsAddChildPopupOpen;
@@ -164,7 +246,10 @@ namespace VegGridLayouter.UI.ViewModels
         public void RemoveChild(TreeViewItemViewModel child)
         {
             _removeChild(_mainWindowViewModel.TreeItems, child);
-            _mainWindowViewModel.Code = _mainWindowViewModel.UpdateXml().ToString();
+
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Lock_;
+            _aggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Unlock_;
         }
 
         // TODO: 我觉得需要加一个Parent，现在先不做乐
@@ -190,11 +275,14 @@ namespace VegGridLayouter.UI.ViewModels
             {
                 Header = "网格",
                 Name = "VegGrid",
-                Attributes = new List<AttributeItem>() { new AttributeItem("Row", ChildRow.ToString()), new AttributeItem("Column", ChildColumn.ToString()) },
+                Attributes = new ObservableCollection<AttributeItem>() { new AttributeItem("Row", ChildRow.ToString()), new AttributeItem("Column", ChildColumn.ToString()) },
                 Parent = this
             };
             Children.Add(newItem);
-            _mainWindowViewModel.Code = _mainWindowViewModel.UpdateXml().ToString();
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Lock_;
+            _aggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Unlock_;
+            _isAddChildPopupOpen = !_isAddChildPopupOpen;
         }
 
         
@@ -284,7 +372,7 @@ namespace VegGridLayouter.UI.ViewModels
                     {
                         Header = "网格",
                         Name = "VegGrid",
-                        Attributes = new List<AttributeItem>() { new AttributeItem("Row", item.Row.ToString()), new AttributeItem("Column", item.Column.ToString()) },
+                        Attributes = new ObservableCollection<AttributeItem>() { new AttributeItem("Row", item.Row.ToString()), new AttributeItem("Column", item.Column.ToString()) },
                         Parent = target.Parent
                     };
 
@@ -301,6 +389,111 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
+
+        private void SetDefault(TreeViewItemViewModel item)
+        {
+            if (item.Name == "VegGrid")
+            {
+                MessageBoxResult res = MessageBox.Show("是否需要生成嵌套网格？", "消息框", MessageBoxButton.YesNo);
+
+                if (res == MessageBoxResult.Yes)
+                {
+                    HashSet<string> existingNames = new HashSet<string>();
+
+                    foreach (var child in item.Children)
+                    {
+                        existingNames.Add(child.Name);
+                    }
+
+                    TreeViewItemViewModel rowDefinitions = new TreeViewItemViewModel(_mainWindowViewModel, _aggregator)
+                    {
+                        Children = new ObservableCollection<TreeViewItemViewModel>(),
+                        Header = "行定义",
+                        Name = "RowDefinitions",
+                        IsCollection = true,
+                        IsNotDefaultSet = false,
+                    };
+                    TreeViewItemViewModel columnDefinitions = new TreeViewItemViewModel(_mainWindowViewModel, _aggregator)
+                    {
+                        Children = new ObservableCollection<TreeViewItemViewModel>(),
+                        Header = "列定义",
+                        Name = "ColumnDefinitions",
+                        IsCollection = true,
+                        IsNotDefaultSet = false,
+                    };
+                    TreeViewItemViewModel children_ = new TreeViewItemViewModel(_mainWindowViewModel, _aggregator)
+                    {
+                        Children = new ObservableCollection<TreeViewItemViewModel>(),
+                        Header = "嵌套网格",
+                        Name = "Children",
+                        IsCollection = true,
+                        IsNotDefaultSet = false,
+                        IsGridRoot = true
+                    };
+
+                    foreach (TreeViewItemViewModel child in new List<TreeViewItemViewModel>() { rowDefinitions, columnDefinitions, children_ })
+                    {
+                        if (existingNames.Contains(child.Name))
+                        {
+                            continue;
+                        }
+                        item.Children.Add(child);
+                    }
+                }
+
+                HashSet<string> existingAttribute = new HashSet<string>();
+                foreach (var attribute in item.Attributes)
+                {
+                    existingAttribute.Add(attribute.Type);
+                }
+
+                AttributeItem row = new AttributeItem("Row", "0");
+                AttributeItem column = new AttributeItem("Column", "0");
+                AttributeItem rowSpan = new AttributeItem("RowSpan", "1");
+                AttributeItem columnSpan = new AttributeItem("ColumnSpan", "1");
+
+                foreach (AttributeItem attribute in new List<AttributeItem>() { row, column, rowSpan, columnSpan })
+                {
+                    if (existingAttribute.Contains(attribute.Type))
+                    {
+                        continue;
+                    }
+                    item.Attributes.Add(attribute);
+                }
+
+                if (res == MessageBoxResult.No)
+                {
+                    item.IsNotDefaultSet = false;
+                }
+            }
+
+            else if (item.Name == "RowDefinition" || item.Name == "ColumnDefinition")
+            {
+                HashSet<string> existingAttribute = new HashSet<string>();
+                foreach (var attribute in item.Attributes)
+                {
+                    existingAttribute.Add(attribute.Type);
+                }
+
+                AttributeItem type_ = new AttributeItem("Type", "Star");
+                AttributeItem value_ = new AttributeItem("Value", "1");
+
+                foreach (AttributeItem attribute in new List<AttributeItem>() { type_, value_ })
+                {
+                    if (existingAttribute.Contains(attribute.Type))
+                    {
+                        continue;
+                    }
+                    item.Attributes.Add(attribute);
+                }
+                item.IsNotDefaultSet = false;
+            }
+
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Lock_;
+            _aggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+            StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Unlock_;
+        }
+
         internal void SetAttributes(XElement element)
         {
             Attributes.Clear();
@@ -313,6 +506,16 @@ namespace VegGridLayouter.UI.ViewModels
         public void UpdateXml()
         {
             _mainWindowViewModel.Code = _mainWindowViewModel.UpdateXml().ToString();
+        }
+
+        public IEnumerator<TreeViewItemViewModel> GetEnumerator()
+        {
+            return Children.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

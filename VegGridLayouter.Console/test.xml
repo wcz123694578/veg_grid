@@ -41,8 +41,7 @@
     </VegGrid>
   </Children>
 </VegGrid>-->
-
-<VegGrid>
+<VegGrid Margin="10">
   <RowDefinitions>
     <RowDefinition Type="Fixed" Value="200"/>
     <RowDefinition Type="Star" Value="1"/>

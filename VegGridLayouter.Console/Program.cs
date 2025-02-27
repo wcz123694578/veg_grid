@@ -16,6 +16,9 @@ namespace VegGridLayouter.ConsoleTest
             // VegasManager.Instance = new ScriptPortal.Vegas.Vegas()
             VegGrid grid = new VegGrid();
             string xml;
+
+
+            grid.Margin = "10";
             using (StreamReader sr = new StreamReader("test.xml"))
             {
                 

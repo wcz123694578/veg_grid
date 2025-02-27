@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,6 +54,22 @@ namespace VegGridLayouter.Core
 
         internal int Level { get; set; }
 
+        private string _marginString;
+
+        [XmlAttribute("Margin")]
+        public string MarginString {
+            get
+            {
+                return _marginString;
+            }
+            set
+            {
+                _marginString = value;
+                Margin = _marginString;
+            } 
+        }
+
+        [XmlIgnore]
         public VegThickness Margin { get; set; } = new VegThickness();        // 内边距
 
         // 目前Generate放在此处十分不合理
@@ -75,7 +92,9 @@ namespace VegGridLayouter.Core
         internal double ComputedWidth { get; set; }
         internal double ComputedHeight { get; set; }
 
-        internal double TempWidth { get; set; }
+        internal double TempWidth { get; set; }         // TempWidth和TempHeight是递归到某一层后
+                                                        // 按父级对这个轨道的计算尺寸的比例换算成能够铺满整个轨道的尺寸
+                                                        // 因为子母轨下面的轨道是按照工程尺寸来的
         internal double TempHeight { get; set; }
         internal double TrackWidth { get; set; }
         internal double TrackHeight { get; set; }
@@ -91,7 +110,7 @@ namespace VegGridLayouter.Core
 
         }
 
-        public VegThickness(int _left, int _top, int _right, int _bottom)
+        public VegThickness(double _left, double _top, double _right, double _bottom)
         {
             this.Left = _left;
             this.Top = _top;
@@ -99,9 +118,59 @@ namespace VegGridLayouter.Core
             this.Bottom = _bottom;
         }
 
-        public int Left { get; set; } = 0;
-        public int Top { get; set; } = 0;
-        public int Right { get; set; } = 0;
-        public int Bottom { get; set; } = 0;
+        public VegThickness(double _left_right, double _top_bottom)
+        {
+            this.Left = this.Right = _left_right;
+            this.Top = this.Bottom = _top_bottom;
+        }
+
+        public VegThickness(double _left_top_right_bottom)
+        {
+            this.Left = this.Top = this.Bottom = this.Right = _left_top_right_bottom;
+        }
+
+        public double Left { get; set; } = 0;
+               
+        public double Top { get; set; } = 0;
+              
+        public double Right { get; set; } = 0;
+               
+        public double Bottom { get; set; } = 0;
+
+        public object ConvertFrom(string value)
+        {
+            if (value is string str)
+            {
+                var parts = str.Split(',');
+
+                switch (parts.Length)
+                {
+                    case 1 when double.TryParse(parts[0], out double all):
+                        return new VegThickness(all); // 统一四个方向
+
+                    case 2 when double.TryParse(parts[0], out double leftRight) && double.TryParse(parts[1], out double topBottom):
+                        return new VegThickness(leftRight, topBottom); // 左右，上下
+
+                    case 4 when double.TryParse(parts[0], out double left) &&
+                               double.TryParse(parts[1], out double top) &&
+                               double.TryParse(parts[2], out double right) &&
+                               double.TryParse(parts[3], out double bottom):
+                        return new VegThickness(left, top, right, bottom); // 四个值分别设置
+
+                    default:
+                        throw new ArgumentException("错误的长度数量. 仅支持 'L,T,R,B'、 'LR,TB' 和 'ALL'");
+                }
+            }
+            throw new ArgumentException("字符串解析错误，仅支持string类型");
+        }
+
+        public double GetLeftRight() => this.Left + this.Right;
+        public double GetTopBottom() => this.Top + this.Bottom;
+
+        public static implicit operator VegThickness(string value)
+        {
+            VegThickness thickness = new VegThickness();
+            return (VegThickness)thickness.ConvertFrom(value);
+        }
     }
 }

@@ -7,6 +7,7 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:viewmodel="clr-namespace:VegGridLayouter.UI.ViewModels"
+             xmlns:behaviors="clr-namespace:VegGridLayouter.UI.Behaviors"
              xmlns:view="clr-namespace:VegGridLayouter.UI.Views"
              xmlns:converters="clr-namespace:VegGridLayouter.UI.Converters"
              mc:Ignorable="d" 
@@ -16,11 +17,11 @@
     </UserControl.Resources>
     <Grid>
         <TreeView   x:Name="GridInfo" 
-                    ItemsSource="{Binding TreeItems}"
+                    ItemsSource="{Binding Root, UpdateSourceTrigger=PropertyChanged}"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto">
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Children, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Header}"></TextBlock>
                         <ListView ItemsSource="{Binding Attributes}">
@@ -41,7 +42,11 @@
                                         <TextBlock Text=" "/>
                                         <TextBlock Text="{Binding Type}"/>
                                         <TextBlock Text=" "/>
-                                        <TextBlock Text="{Binding Value}"/>
+                                        <TextBox Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <i:Interaction.Behaviors>
+                                                <behaviors:TextBoxBehavior/>
+                                            </i:Interaction.Behaviors>
+                                        </TextBox>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -51,18 +56,23 @@
                                     Command="{Binding AddChildCommand}" 
                                     CommandParameter="{Binding}"
                                     Margin="5, 0" Width="20" Height="20"
-                                    Visibility="{Binding IsGridRoot, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    Visibility="{Binding IsCollection, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         <Button     Content="-" 
                                     Command="{Binding RemoveChildCommand}" 
                                     CommandParameter="{Binding}"
                                     Margin="5, 0" Width="20" Height="20"
-                                    Visibility="{Binding IsGrid, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    Visibility="{Binding IsChild, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         <Button     Content="&#xE713;"
                                     FontFamily="Segoe MDL2 Asstes"
                                     Command="{Binding SetRowColumnCommand}"
                                     CommandParameter="{Binding}"
                                     Margin="5, 0" Width="20"
                                     Visibility="{Binding IsGridRoot, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <Button     Content="完善框架"
+                                    Command="{Binding SetDefaultCommand}"
+                                    CommandParameter="{Binding}"
+                                    Margin="5, 0" Width="20"
+                                    Visibility="{Binding IsNotDefaultSet, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
@@ -97,6 +107,12 @@
                     StaysOpen="False"
                     IsOpen="{Binding SelectedTreeItem.IsSetRowColumnPopupOpen, Mode=TwoWay}">
             <view:SetRowColumnPopup/>
+        </Popup>
+
+        <Popup      Placement="Mouse"
+                    StaysOpen="False"
+                    IsOpen="{Binding SelectedTreeItem.IsAddRowPopupOpen, Mode=TwoWay}">
+            <view:AddRowPopupControl/>
         </Popup>
     </Grid>
 </UserControl>
