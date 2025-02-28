@@ -113,41 +113,23 @@ namespace VegGridLayouter.Core
 
         public override void Generate()
         {
+            base.Generate();
+
             double width = CurProject.Video.Width;
             double height = CurProject.Video.Height;
 
-            this.ComputedWidth -= this.Margin.GetLeftRight();
-            this.ComputedHeight -= this.Margin.GetTopBottom();
-
-            // TODO: 
-            if (this.ComputedWidth > this.ComputedHeight * (width / height))
-            {
-                TempWidth = width;
-                TempHeight = width * (this.ComputedHeight / this.ComputedWidth);
-            }
-            else
-            {
-                TempWidth = height * (this.ComputedWidth / this.ComputedHeight);
-                TempHeight = height;
-            }
-
             CalculateLayout(TempWidth, TempHeight);
 
-            if (this.ComputedWidth * (height / width) > this.ComputedHeight)
-            {
-                TrackWidth = this.ComputedWidth;
-                TrackHeight = this.ComputedWidth * (height / width);
-            }
-            else
-            {
-                TrackWidth = this.ComputedHeight * (width / height);
-                TrackHeight = this.ComputedHeight;
-            }
+            
 
             VideoTrack videoTrack;
 
             videoTrack = VegTrackHelper.AppendTrack(CurVegas, $"{this.Row} - {this.Column}");
             videoTrack.CompositeNestingLevel = this.Level;
+
+            double finalX, finalY;
+            finalX = (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX);
+            finalY = (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY);
 
             if (!(Children.Count == 0))
             {
@@ -159,8 +141,8 @@ namespace VegGridLayouter.Core
                 track.SetParentSize(TrackHeight, TrackHeight);
 
                 track.ParentPosition = new VegPosition(
-                    (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX - (Margin.GetLeftRight() / 2 - Margin.Left)),
-                    (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY) + (Margin.GetTopBottom() / 2 - Margin.Top));
+                    finalX - (Margin.GetLeftRight() / 2 - Margin.Left),
+                    finalY + (Margin.GetTopBottom() / 2 - Margin.Top));
 
                 PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
@@ -180,9 +162,7 @@ namespace VegGridLayouter.Core
                     TrackWidth, TrackHeight
                 );
 
-                double finalX, finalY;
-                finalX = (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX);
-                finalY = (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY);
+                
 
                 track.Position = new VegPosition(
                     finalX - (Margin.GetLeftRight() / 2 - Margin.Left),

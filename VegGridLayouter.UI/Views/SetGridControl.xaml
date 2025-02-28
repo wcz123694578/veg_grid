@@ -71,7 +71,7 @@
                         <Button     Content="完善框架"
                                     Command="{Binding SetDefaultCommand}"
                                     CommandParameter="{Binding}"
-                                    Margin="5, 0" Width="20"
+                                    Margin="5, 0" Width="50"
                                     Visibility="{Binding IsNotDefaultSet, Mode=TwoWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
                     </StackPanel>
                 </HierarchicalDataTemplate>

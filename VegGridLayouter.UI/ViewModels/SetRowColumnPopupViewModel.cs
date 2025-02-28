@@ -71,7 +71,7 @@ namespace VegGridLayouter.UI.ViewModels
         {
             this.TotalRowCount = message.Row;
             this.TotalColumnCount = message.Column;
-            this.WrapPanelWidth = 50 * this.TotalRowCount;
+            this.WrapPanelWidth = 50 * this.TotalColumnCount;
 
             this._internalMessage = message;
 

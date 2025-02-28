@@ -5,6 +5,7 @@ using System.Windows;
 using VegGridLayouter.Core;
 using VegGridLayouter.Parser;
 using VegGridLayouter.UI.ViewModels;
+using VegGridLayouter.UI.Views;
 
 namespace VegGridLayouter.UI
 {
@@ -22,6 +23,8 @@ namespace VegGridLayouter.UI
 
             MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(StaticVariable.eventAggregator);
             this.DataContext = mainWindowViewModel;
+
+            WindowsManager.Register<AboutWindow>("AboutWindow");
 
             ICSharpCode.AvalonEdit.Search.SearchPanel.Install(TextEditor);
             foldingManager = FoldingManager.Install(TextEditor.TextArea);

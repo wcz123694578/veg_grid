@@ -75,7 +75,34 @@ namespace VegGridLayouter.Core
         // 目前Generate放在此处十分不合理
         public virtual void Generate()
         {
+            double width = CurProject.Video.Width;
+            double height = CurProject.Video.Height;
 
+            this.ComputedWidth -= this.Margin.GetLeftRight();
+            this.ComputedHeight -= this.Margin.GetTopBottom();
+
+            // TODO: 
+            if (this.ComputedWidth > this.ComputedHeight * (width / height))
+            {
+                TempWidth = width;
+                TempHeight = width * (this.ComputedHeight / this.ComputedWidth);
+            }
+            else
+            {
+                TempWidth = height * (this.ComputedWidth / this.ComputedHeight);
+                TempHeight = height;
+            }
+
+            if (this.ComputedWidth * (height / width) > this.ComputedHeight)
+            {
+                TrackWidth = this.ComputedWidth;
+                TrackHeight = this.ComputedWidth * (height / width);
+            }
+            else
+            {
+                TrackWidth = this.ComputedHeight * (width / height);
+                TrackHeight = this.ComputedHeight;
+            }
         }
 
         [XmlAttribute]

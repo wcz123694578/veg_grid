@@ -14,11 +14,11 @@ namespace VegGridLayouter.ConsoleTest
         static void Main(string[] args)
         {
             // VegasManager.Instance = new ScriptPortal.Vegas.Vegas()
-            VegGrid grid = new VegGrid();
+            VegElement element = new VegElement();
             string xml;
 
 
-            grid.Margin = "10";
+            element.Margin = "10";
             using (StreamReader sr = new StreamReader("test.xml"))
             {
                 
@@ -29,7 +29,7 @@ namespace VegGridLayouter.ConsoleTest
             {
                 Console.WriteLine("解析XML...");
 
-                grid = VegXmlDeserializer.DeserializeXmlString(xml);
+                element = VegXmlDeserializer.DeserializeXmlString(xml);
 
                 //int width = grid.CurProject.Video.Width;
                 //int height = grid.CurProject.Video.Height;

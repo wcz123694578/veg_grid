@@ -306,8 +306,12 @@ namespace VegGridLayouter.UI.ViewModels
         public DelegateCommand GenerateCommand { get; set; }
         public DelegateCommand LoadCommand { get; set; }
         public DelegateCommand SaveCommand { get; set; }
+        public DelegateCommand OpenAboutWindowCommand { get; set; } = new DelegateCommand(() =>
+        {
+            WindowsManager.Show("AboutWindow", new AboutWindowViewModel());
+        });
 
-        
+
 
         public FoldingManager foldingManager { get; set; }
         public XmlFoldingStrategy foldingStrategy { get; set; }
@@ -317,19 +321,15 @@ namespace VegGridLayouter.UI.ViewModels
         private void generate()
         {
             // FileStream fs = File.Open("test.xml", FileMode.Open);
-            VegGrid grid = new VegGrid();
+            VegElement element = new VegElement();
 
             try
             {
                 debugXml("解析XML...");
 
-                grid = VegXmlDeserializer.DeserializeXmlString(this._code);
+                element = VegXmlDeserializer.DeserializeXmlString(this._code);
 
-
-                int width = grid.CurProject.Video.Width;
-                int height = grid.CurProject.Video.Height;
-
-                grid.Generate();
+                element.Generate();
 
                 debugXml("生成完毕！");
                 
