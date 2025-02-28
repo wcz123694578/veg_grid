@@ -9,7 +9,8 @@
         xmlns:behaviors="clr-namespace:VegGridLayouter.UI.Behaviors"
         xmlns:view="clr-namespace:VegGridLayouter.UI.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        Icon="Resources/logo.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

@@ -268,8 +268,11 @@ namespace VegGridLayouter.UI.ViewModels
             _aggregator.GetEvent<UpdateXmlEvent>().Subscribe(UpdateXmlEventProcesser);
             _aggregator.GetEvent<LoadXmlToTreeViewEvent>().Subscribe(LoadXmlToTreeViewEventProcesser);
 
+            loadConfigFile();
+
             LoadLog();
         }
+
 
         private void LoadXmlToTreeViewEventProcesser(LoadXmlToTreeViewEventModel obj)
         {
@@ -369,6 +372,9 @@ namespace VegGridLayouter.UI.ViewModels
             if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 FilePath = openFileDialog.FileName;
+                OperateConfigFile oc = new OperateConfigFile();
+                string file = $@"{StaticVariable.FilePath}\{StaticVariable.ConfigFileName}";
+                oc.ConfigWrite("Xml", "InitialFilePath", FilePath, file);
             }
 
             try
@@ -424,8 +430,53 @@ namespace VegGridLayouter.UI.ViewModels
             
         }
 
-        
+        private void loadConfigFile()
+        {
+            string file = $@"{StaticVariable.FilePath}\{StaticVariable.ConfigFileName}";
+            OperateConfigFile oc = new OperateConfigFile();
+            FilePath = oc.ConfigRead("Xml", "InitialFilePath", file);
+            if (!string.IsNullOrEmpty(FilePath))
+            {
+                try
+                {
+                    using (StreamReader sr = new StreamReader(FilePath))
+                    {
+                        Code = sr.ReadToEnd();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    printLog(ex.ToString());
+                }
+            }
+        }
     }
 
-    
+    class OperateConfigFile
+    {
+        [System.Runtime.InteropServices.DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+
+        [System.Runtime.InteropServices.DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section, string key, string def, System.Text.StringBuilder retVal, int size, string filePath);
+
+        public void ConfigWrite(string section, string key, string value, string path)
+        {
+            WritePrivateProfileString(section, key, value, path);
+        }
+
+        public string ConfigRead(string section, string key, string path)
+        {
+            StringBuilder temp = new StringBuilder(255);
+            GetPrivateProfileString(section, key, "", temp, 255, path);
+            return temp.ToString();
+        }
+
+        public void ConfigDelete(string FilePath)
+        {
+            File.Delete(FilePath);
+        }
+
+
+    }
 }
