@@ -293,7 +293,7 @@ namespace VegGridLayouter.UI.ViewModels
 
             int row = 0, column = 0;
             ObservableCollection<TreeViewItemViewModel> temp = null;
-            if (this.Parent == null)
+            if (item.Parent == null)
             {
                 temp = _mainWindowViewModel.TreeItems;
             }
@@ -412,6 +412,7 @@ namespace VegGridLayouter.UI.ViewModels
                         Name = "RowDefinitions",
                         IsCollection = true,
                         IsNotDefaultSet = false,
+                        Parent = item
                     };
                     TreeViewItemViewModel columnDefinitions = new TreeViewItemViewModel(_mainWindowViewModel, _aggregator)
                     {
@@ -420,6 +421,7 @@ namespace VegGridLayouter.UI.ViewModels
                         Name = "ColumnDefinitions",
                         IsCollection = true,
                         IsNotDefaultSet = false,
+                        Parent = item
                     };
                     TreeViewItemViewModel children_ = new TreeViewItemViewModel(_mainWindowViewModel, _aggregator)
                     {
@@ -428,7 +430,8 @@ namespace VegGridLayouter.UI.ViewModels
                         Name = "Children",
                         IsCollection = true,
                         IsNotDefaultSet = false,
-                        IsGridRoot = true
+                        IsGridRoot = true,
+                        Parent = item
                     };
 
                     foreach (TreeViewItemViewModel child in new List<TreeViewItemViewModel>() { rowDefinitions, columnDefinitions, children_ })
