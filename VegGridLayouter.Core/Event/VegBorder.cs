@@ -65,8 +65,8 @@ namespace VegGridLayouter.Core.Element
         public override void ApplySize(VideoEvent videoEvent)
         {
             
-            OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
-            OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
+            OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Width_0"];
+            OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Height_0"];
 
             widthParameter.Value = (this.Width - (Margin.Left + Margin.Right) * (CurProject.Video.Width / this.Track.Width)) / this.Width;
             heightParameter.Value = (this.Height - (Margin.Top + Margin.Bottom) * (CurProject.Video.Height / this.Track.Height)) / this.Height;

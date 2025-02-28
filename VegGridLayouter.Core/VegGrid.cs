@@ -192,8 +192,8 @@ namespace VegGridLayouter.Core
 
         private void modifyMaskEffect(Effect maskEffect)
         {
-            OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[9];
-            OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect.Parameters[10];
+            OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Width_0"];
+            OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Height_0"];
             widthParameter.Value = (this.ComputedWidth) / TrackWidth;
             heightParameter.Value = (this.ComputedHeight) / TrackHeight;
         }
