@@ -52,33 +52,54 @@ namespace VegGridLayouter.Core
             }
         }
 
+        /// <summary>
+        /// 计算行列的实际尺寸，并为每个子元素计算布局位置和尺寸
+        /// </summary>
+        /// <param name="availableWidth"></param>
+        /// <param name="availableHeight"></param>
         public void CalculateLayout(double availableWidth, double availableHeight)
         {
-            
-
             /// 计算行列的实际尺寸
-            double[] rowHeights = DistributeSizes(RowDefinitions, availableHeight);
-            double[] columnWidths = DistributeSizes(ColumnDefinitions, availableWidth);
+            double[] rowHeights = CalculateAxisSize(RowDefinitions, availableHeight);
+            double[] columnWidths = CalculateAxisSize(ColumnDefinitions, availableWidth);
 
             // 计算子元素的布局
             foreach (var child in Children)
             {
-                double x = columnWidths.Take(child.Column).Sum();
-                double y = rowHeights.Take(child.Row).Sum();
-                double width = columnWidths.Skip(child.Column).Take(child.ColumnSpan).Sum();
-                double height = rowHeights.Skip(child.Row).Take(child.RowSpan).Sum();
-
-                child.ComputedX = x;
-                child.ComputedY = y;
-                child.ComputedWidth = width;
-                child.ComputedHeight = height;
+                ApplyChildLayout(child, rowHeights, columnWidths);
 
                 //child.OffsetX = this.OffsetX + child.ComputedX;
                 //child.OffsetY = this.OffsetY + child.ComputedY;
             }
         }
 
-        private double[] DistributeSizes(IEnumerable<GridSizeDefinition> definitions, double availableSize)
+        /// <summary>
+        /// 将算得的尺寸应用到轨道位置和尺寸中
+        /// </summary>
+        /// <param name="child"></param>
+        /// <param name="rowHeights"></param>
+        /// <param name="columnWidths"></param>
+        private void ApplyChildLayout(VegGrid child, double[] rowHeights, double[] columnWidths)
+        {
+            double x = columnWidths.Take(child.Column).Sum();
+            double y = rowHeights.Take(child.Row).Sum();
+            double width = columnWidths.Skip(child.Column).Take(child.ColumnSpan).Sum();
+            double height = rowHeights.Skip(child.Row).Take(child.RowSpan).Sum();
+
+            child.ComputedX = x;
+            child.ComputedY = y;
+            child.ComputedWidth = width;
+            child.ComputedHeight = height;
+        }
+
+        /// <summary>
+        /// 分配行/列的实际尺寸
+        /// </summary>
+        /// <param name="definitions">行/列定义</param>
+        /// <param name="availableSize">可用空间</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        private double[] CalculateAxisSize(IEnumerable<GridSizeDefinition> definitions, double availableSize)
         {
             var defList = definitions.ToList();
 
@@ -110,6 +131,22 @@ namespace VegGridLayouter.Core
             return sizes;
         }
 
+        /// <summary>
+        /// 获取当前元素在Vegas中的实际位置（以父元素中心为原点）
+        /// </summary>
+        /// <returns></returns>
+        public VegPosition TrackPosition
+        {
+            get
+            {
+                double finalX = (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX);
+                double finalY = (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY);
+                return new VegPosition(
+                    finalX - (Margin.GetLeftRight() / 2 - Margin.Left),
+                    finalY + (Margin.GetTopBottom() / 2 - Margin.Top)
+                );
+            }
+        }
 
         public override void Generate()
         {
@@ -127,9 +164,7 @@ namespace VegGridLayouter.Core
             videoTrack = VegTrackHelper.AppendTrack(CurVegas, $"{this.Row} - {this.Column}");
             videoTrack.CompositeNestingLevel = this.Level;
 
-            double finalX, finalY;
-            finalX = (this.Level == 0) ? 0 : (-Parent.TempWidth / 2 + this.ComputedWidth / 2 + this.ComputedX);
-            finalY = (this.Level == 0) ? 0 : (Parent.TempHeight / 2 - this.ComputedHeight / 2 - this.ComputedY);
+            VegPosition trackPosition = TrackPosition;
 
             if (!(Children.Count == 0))
             {
@@ -140,14 +175,12 @@ namespace VegGridLayouter.Core
 
                 track.SetParentSize(TrackHeight, TrackHeight);
 
-                track.ParentPosition = new VegPosition(
-                    finalX - (Margin.GetLeftRight() / 2 - Margin.Left),
-                    finalY + (Margin.GetTopBottom() / 2 - Margin.Top));
+                track.ParentPosition = trackPosition;
 
                 PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
-                modifyMaskEffect(maskEffect);
+                ModifyMaskEffect(maskEffect);
 
                 foreach (var item in Children)
                 {
@@ -162,16 +195,12 @@ namespace VegGridLayouter.Core
                     TrackWidth, TrackHeight
                 );
 
-                
-
-                track.Position = new VegPosition(
-                    finalX - (Margin.GetLeftRight() / 2 - Margin.Left),
-                    finalY + (Margin.GetTopBottom() / 2 - Margin.Top));
+                track.Position = trackPosition;
 
                 PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
-                modifyMaskEffect(maskEffect);
+                ModifyMaskEffect(maskEffect);
 
                 Random ran = new Random();
                 VegBorder border = new VegBorder(
@@ -190,7 +219,7 @@ namespace VegGridLayouter.Core
             }
         }
 
-        private void modifyMaskEffect(Effect maskEffect)
+        private void ModifyMaskEffect(Effect maskEffect)
         {
             OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Width_0"];
             OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Height_0"];

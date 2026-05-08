@@ -75,6 +75,7 @@ namespace VegGridLayouter.Core
         // 目前Generate放在此处十分不合理
         public virtual void Generate()
         {
+            // 得到工程画布的大小
             double width = CurProject.Video.Width;
             double height = CurProject.Video.Height;
 

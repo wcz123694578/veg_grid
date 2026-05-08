@@ -2,11 +2,7 @@
 using Prism.Events;
 using Prism.Mvvm;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using VegGridLayouter.UI.Events;
 
@@ -55,6 +51,11 @@ namespace VegGridLayouter.UI.ViewModels
         public ObservableCollection<CellViewModel> Cells { get; set; } = new ObservableCollection<CellViewModel>();
 
         private IEventAggregator _aggregator;
+
+        public SetRowColumnPopupViewModel()
+        {
+            
+        }
 
         public SetRowColumnPopupViewModel(IEventAggregator eventAggregator)
         {
@@ -202,16 +203,13 @@ namespace VegGridLayouter.UI.ViewModels
     {
         public int Row { get; set; }
         public int Column { get; set; }
+
         private bool _isChecked = false;
 
         public bool IsChecked
         {
-            get { return _isChecked; }
-            set
-            {
-                _isChecked = value;
-                RaisePropertyChanged(nameof(IsChecked));
-            }
+            get => _isChecked;
+            set => SetProperty(ref _isChecked, value);
         }
     }
 }

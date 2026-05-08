@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 using VegGridLayouter.Core;
-using ScriptPortal.Vegas;
 using System.Text;
 
 namespace VegGridLayouter.Parser

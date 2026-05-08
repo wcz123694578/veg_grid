@@ -54,11 +54,17 @@ namespace VegGridLayouter.UI.ViewModels
 
         public TreeViewItemViewModel SelectedItem { get; set; }
 
-        private IEventAggregator _aggregator = StaticVariable.eventAggregator;
+        private IEventAggregator _aggregator;
 
         public AddRowPopupControlViewModel()
         {
-            ConfirmAddRowCommand = new DelegateCommand(confirmAddRowFunc);
+            ConfirmAddRowCommand = new DelegateCommand(ConfirmAddRowFunc);
+
+            if (StaticVariable.eventAggregator == null)
+            {
+                return;
+            }
+            _aggregator = StaticVariable.eventAggregator;
             _aggregator.GetEvent<SelectTreeViewItemEvent>().Subscribe(SelectTreeViewItemEventProcesser);
         }
 
@@ -69,7 +75,7 @@ namespace VegGridLayouter.UI.ViewModels
 
         public DelegateCommand ConfirmAddRowCommand { get; set; }
 
-        private void confirmAddRowFunc()
+        private void ConfirmAddRowFunc()
         {
 
             string listName = this.SelectedItem.Name.Substring(0, this.SelectedItem.Name.Length - 1);
