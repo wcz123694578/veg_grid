@@ -2,13 +2,11 @@
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
+using ScriptPortal.Vegas;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Xml.Linq;
 using VegGridLayouter.Core;
 using VegGridLayouter.Parser;
@@ -253,8 +251,10 @@ namespace VegGridLayouter.UI.ViewModels
 
         private IEventAggregator _aggregator;
 
-        public MainWindowViewModel(IEventAggregator eventAggregator)
+        public MainWindowViewModel(IEventAggregator eventAggregator, Vegas vegas)
         {
+            this._vegas = vegas;
+            
             GenerateCommand = new DelegateCommand(generate);
             LoadCommand = new DelegateCommand(load);
             SaveCommand = new DelegateCommand(save);
@@ -306,6 +306,8 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
+        private readonly Vegas _vegas;
+
         public DelegateCommand GenerateCommand { get; set; }
         public DelegateCommand LoadCommand { get; set; }
         public DelegateCommand SaveCommand { get; set; }
@@ -332,7 +334,13 @@ namespace VegGridLayouter.UI.ViewModels
 
                 element = VegXmlDeserializer.DeserializeXmlString(this._code);
 
-                element.Generate();
+                StaticVariable.CurrentDispatcher.Invoke(() =>
+                {
+                    using (var ub = new UndoBlock("Generate grids"))
+                    {
+                        element.Generate();
+                    }
+                });
 
                 debugXml("生成完毕！");
                 

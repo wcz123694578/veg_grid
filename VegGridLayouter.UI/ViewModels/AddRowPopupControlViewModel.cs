@@ -58,13 +58,14 @@ namespace VegGridLayouter.UI.ViewModels
 
         public AddRowPopupControlViewModel()
         {
+            
+        }
+
+        public AddRowPopupControlViewModel(IEventAggregator aggregator)
+        {
             ConfirmAddRowCommand = new DelegateCommand(ConfirmAddRowFunc);
 
-            if (StaticVariable.eventAggregator == null)
-            {
-                return;
-            }
-            _aggregator = StaticVariable.eventAggregator;
+            _aggregator = aggregator;
             _aggregator.GetEvent<SelectTreeViewItemEvent>().Subscribe(SelectTreeViewItemEventProcesser);
         }
 

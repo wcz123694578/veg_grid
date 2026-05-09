@@ -109,9 +109,9 @@
             <view:SetRowColumnPopup/>
         </Popup>
 
-        <Popup      Placement="Mouse"
-                    StaysOpen="False"
-                    IsOpen="{Binding SelectedTreeItem.IsAddRowPopupOpen, Mode=TwoWay}">
+        <Popup Placement="Mouse"
+               StaysOpen="False"
+               IsOpen="{Binding SelectedTreeItem.IsAddRowPopupOpen, Mode=TwoWay}">
             <view:AddRowPopupControl/>
         </Popup>
     </Grid>

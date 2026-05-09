@@ -9,7 +9,7 @@ namespace VegGridLayouter.Test
     {
         public void FromVegas(Vegas vegas)
         {
-            VegasManager.Instance = vegas;
+            VegasContextFactory.Initialize(vegas);
 
             try
             {

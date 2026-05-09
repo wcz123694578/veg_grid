@@ -7,9 +7,9 @@
              xmlns:viewmodel="clr-namespace:VegGridLayouter.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
-    <UserControl.DataContext>
+    <d:UserControl.DataContext>
         <viewmodel:AddRowPopupControlViewModel/>
-    </UserControl.DataContext>
+    </d:UserControl.DataContext>
     <Border Background="White" BorderBrush="Black" BorderThickness="1">
         <StackPanel Margin="10">
             <DockPanel>

@@ -1,5 +1,6 @@
 ﻿using ICSharpCode.AvalonEdit.Folding;
 using Prism.Events;
+using Prism.Ioc;
 using System.IO;
 using System.Windows;
 using VegGridLayouter.Core;
@@ -17,11 +18,19 @@ namespace VegGridLayouter.UI
         private FoldingManager foldingManager = null;
         XmlFoldingStrategy foldingStrategy = new XmlFoldingStrategy();
 
+        private readonly IContainerProvider _container;
+
         public MainWindow()
         {
+            
+        }
+
+        public MainWindow(IContainerProvider container)
+        {
+            _container = container;
             InitializeComponent();
 
-            MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(StaticVariable.eventAggregator);
+            MainWindowViewModel mainWindowViewModel = _container.Resolve<MainWindowViewModel>();
             this.DataContext = mainWindowViewModel;
 
             WindowsManager.Register<AboutWindow>("AboutWindow");

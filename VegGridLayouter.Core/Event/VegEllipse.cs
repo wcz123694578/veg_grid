@@ -1,19 +1,15 @@
 ﻿using ScriptPortal.Vegas;
 using VegGridLayouter.Core.Visual;
+using static VegGridLayouter.Core.VegasContextFactory;
 
 namespace VegGridLayouter.Core.Element
 {
     public class VegEllipse : VegShape
     {
-        public VegEllipse()
-        {
-
-        }
-
         public VegEllipse(double radius)
         {
-            double height = CurProject.Video.Height;
-            double width = CurProject.Video.Width;
+            double height = Context.Project.Video.Height;
+            double width = Context.Project.Video.Width;
             if (width > height)
             {
                 MinorAxis = radius;
@@ -58,10 +54,10 @@ namespace VegGridLayouter.Core.Element
 
         public override void Generate()
         {
-            PlugInNode plugIn = CurVegas.Generators.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:solidcolor}");
+            PlugInNode plugIn = Context.Generators.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:solidcolor}");
             VideoEvent videoEvent = VegEventHelper.AddEventWithPlugIn(Track, plugIn);
             ApplyColor(videoEvent);
-            PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
+            PlugInNode maskPlugIn = Context.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
             this.maskEffect = VegEventHelper.AddVideoFX(videoEvent, maskPlugIn);
 
             ApplySize(videoEvent);

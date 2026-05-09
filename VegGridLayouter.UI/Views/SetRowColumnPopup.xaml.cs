@@ -1,4 +1,5 @@
 ﻿using Prism.Events;
+using Prism.Ioc;
 using System.Windows.Controls;
 using VegGridLayouter.UI.ViewModels;
 
@@ -13,7 +14,7 @@ namespace VegGridLayouter.UI.Views
         {
             InitializeComponent();
 
-            var setRowColumnPopupViewModel = new SetRowColumnPopupViewModel(StaticVariable.eventAggregator);
+            var setRowColumnPopupViewModel = ServiceLocator.Container.Resolve<SetRowColumnPopupViewModel>();
             this.DataContext = setRowColumnPopupViewModel;
         }
     }

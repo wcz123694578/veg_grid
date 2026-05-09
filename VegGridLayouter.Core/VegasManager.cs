@@ -1,5 +1,4 @@
 ﻿using ScriptPortal.Vegas;
-using System.Threading;
 
 namespace VegGridLayouter.Core
 {
@@ -9,8 +8,13 @@ namespace VegGridLayouter.Core
         WaitToGenerate
     }
 
-    public static class VegasManager
+    public static class VegasContextFactory
     {
-        public static Vegas Instance { get; set; }
+        public static Vegas Context { get; private set; }
+
+        public static void Initialize(Vegas vegas)
+        {
+            Context = vegas;
+        }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using ScriptPortal.Vegas;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Xml.Serialization;
 using VegGridLayouter.Core.Element;
+using static VegGridLayouter.Core.VegasContextFactory;
 
 namespace VegGridLayouter.Core
 {
@@ -25,8 +23,8 @@ namespace VegGridLayouter.Core
 
             if (this.Level == 0)
             {
-                this.ComputedWidth = CurProject.Video.Width;
-                this.ComputedHeight = CurProject.Video.Height;
+                this.ComputedWidth = Context.Project.Video.Width;
+                this.ComputedHeight = Context.Project.Video.Height;
                 this.ComputedX = 0;
                 this.ComputedY = 0;
                 //this.OffsetX = this.OffsetY = 0;
@@ -152,8 +150,8 @@ namespace VegGridLayouter.Core
         {
             base.Generate();
 
-            double width = CurProject.Video.Width;
-            double height = CurProject.Video.Height;
+            double width = Context.Project.Video.Width;
+            double height = Context.Project.Video.Height;
 
             CalculateLayout(TempWidth, TempHeight);
 
@@ -161,7 +159,7 @@ namespace VegGridLayouter.Core
 
             VideoTrack videoTrack;
 
-            videoTrack = VegTrackHelper.AppendTrack(CurVegas, $"{this.Row} - {this.Column}");
+            videoTrack = VegTrackHelper.AppendTrack($"{this.Row} - {this.Column}");
             videoTrack.CompositeNestingLevel = this.Level;
 
             VegPosition trackPosition = TrackPosition;
@@ -170,14 +168,14 @@ namespace VegGridLayouter.Core
             {
                 VegTrack track = new VegTrack(videoTrack);
 
-                VideoTrack tempChild = VegTrackHelper.AppendTrack(CurVegas, "tempChild");
+                VideoTrack tempChild = VegTrackHelper.AppendTrack("tempChild");
                 tempChild.CompositeNestingLevel = this.Level + 1;
 
                 track.SetParentSize(TrackHeight, TrackHeight);
 
                 track.ParentPosition = trackPosition;
 
-                PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
+                PlugInNode maskPlugIn = Context.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
                 ModifyMaskEffect(maskEffect);
@@ -197,7 +195,7 @@ namespace VegGridLayouter.Core
 
                 track.Position = trackPosition;
 
-                PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
+                PlugInNode maskPlugIn = Context.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
                 this.maskEffect = VegTrackHelper.AddVideoFX(track, maskPlugIn);
 
                 ModifyMaskEffect(maskEffect);

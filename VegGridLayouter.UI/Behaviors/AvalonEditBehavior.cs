@@ -1,5 +1,7 @@
 ﻿using ICSharpCode.AvalonEdit;
 using Microsoft.Xaml.Behaviors;
+using Prism.Events;
+using Prism.Ioc;
 using System;
 using System.Windows;
 using VegGridLayouter.UI.Events;
@@ -50,7 +52,9 @@ namespace VegGridLayouter.UI.Behaviors
                 {
                     CodeText = textEditor.Document.Text;
                     if (StaticVariable.TreeViewState == StaticVariable.TreeViewStateType.Unlock_)
-                        StaticVariable.eventAggregator.GetEvent<LoadXmlToTreeViewEvent>().Publish(new LoadXmlToTreeViewEventModel());
+                    {
+                        ServiceLocator.Container.Resolve<IEventAggregator>().GetEvent<LoadXmlToTreeViewEvent>().Publish(new LoadXmlToTreeViewEventModel());
+                    }
                 }
             }
         }

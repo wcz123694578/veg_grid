@@ -1,9 +1,5 @@
 ﻿using ScriptPortal.Vegas;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static VegGridLayouter.Core.VegasContextFactory;
 
 namespace VegGridLayouter.Core
 {
@@ -30,17 +26,17 @@ namespace VegGridLayouter.Core
             
         }
 
-        public static VideoTrack AppendTrack(Vegas curVegas)
+        public static VideoTrack AppendTrack()
         {
-            VideoTrack videoTrack = new VideoTrack(curVegas.Project.Tracks.Count);
-            curVegas.Project.Tracks.Add(videoTrack);
+            VideoTrack videoTrack = new VideoTrack(Context.Project.Tracks.Count);
+            Context.Project.Tracks.Add(videoTrack);
             return videoTrack;
         }
 
-        public static VideoTrack AppendTrack(Vegas curVegas, string name)
+        public static VideoTrack AppendTrack(string name)
         {
-            VideoTrack videoTrack = new VideoTrack(curVegas.Project.Tracks.Count, name);
-            curVegas.Project.Tracks.Add(videoTrack);
+            VideoTrack videoTrack = new VideoTrack(Context.Project.Tracks.Count, name);
+            Context.Project.Tracks.Add(videoTrack);
             return videoTrack;
         }
     }

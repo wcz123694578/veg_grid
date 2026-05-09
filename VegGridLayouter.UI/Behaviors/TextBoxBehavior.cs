@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xaml.Behaviors;
+using Prism.Events;
+using Prism.Ioc;
 using System.Windows.Controls;
 using VegGridLayouter.UI.Events;
 
@@ -23,7 +25,7 @@ namespace VegGridLayouter.UI.Behaviors
             if (sender is TextBox textBox)
             {
                 StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Lock_;
-                StaticVariable.eventAggregator.GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
+                ServiceLocator.Container.Resolve<IEventAggregator>().GetEvent<UpdateXmlEvent>().Publish(new UpdateXmlEventModel());
                 StaticVariable.TreeViewState = StaticVariable.TreeViewStateType.Unlock_;
             }
         }

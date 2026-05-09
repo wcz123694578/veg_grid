@@ -1,6 +1,6 @@
 ﻿using Prism.Events;
 using ScriptPortal.Vegas;
-// using Unity;
+using System.Windows.Threading;
 using VegGridLayouter.Core;
 
 namespace VegGridLayouter.UI
@@ -9,12 +9,15 @@ namespace VegGridLayouter.UI
     {
         public void FromVegas(Vegas vegas)
         {
-            VegasManager.Instance = vegas;
+            //var MainWindow = new MainWindow();
+            //MainWindow.ShowDialog();
 
-            StaticVariable.eventAggregator = new EventAggregator();
+            StaticVariable.CurrentDispatcher = Dispatcher.CurrentDispatcher;
 
-            var MainWindow = new MainWindow();
-            MainWindow.ShowDialog();
+            VegasContextFactory.Initialize(vegas);
+
+            Bootstrapper bootstrapper = new Bootstrapper(vegas);
+            bootstrapper.Run();
         }
     }
 }

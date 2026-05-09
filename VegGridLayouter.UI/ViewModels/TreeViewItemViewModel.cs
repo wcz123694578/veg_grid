@@ -1,5 +1,6 @@
 ﻿using Prism.Commands;
 using Prism.Events;
+using Prism.Ioc;
 using Prism.Mvvm;
 using System;
 using System.Collections;
@@ -18,7 +19,7 @@ namespace VegGridLayouter.UI.ViewModels
         public string Type { get; set; }
         private string _value;
 
-        private IEventAggregator _aggregator = StaticVariable.eventAggregator;
+        private IEventAggregator _aggregator;
 
         public string Value
         {
@@ -37,6 +38,8 @@ namespace VegGridLayouter.UI.ViewModels
         {
             this.Type = type;
             this.Value = value;
+
+            _aggregator = ServiceLocator.Container.Resolve<IEventAggregator>();
         }
     }
 

@@ -1,5 +1,7 @@
 ﻿using Prism.Events;
 using System;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace VegGridLayouter.UI
 {
@@ -20,5 +22,7 @@ namespace VegGridLayouter.UI
         public static string ConfigFileName = "layouter_config.ini";
 
         public static string FilePath = $@"{Environment.GetEnvironmentVariable("AppData")}\Vegas Pro";
+
+        public static Dispatcher CurrentDispatcher;
     }
 }

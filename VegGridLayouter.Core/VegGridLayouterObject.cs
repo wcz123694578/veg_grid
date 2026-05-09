@@ -8,16 +8,16 @@ namespace VegGridLayouter.Core
         public VegGridLayouterObject()
         {
 //#if UI_DEBUG
-            this.CurVegas = VegasManager.Instance;
-            this.CurProject = this.CurVegas.Project;
+            //this.CurVegas = vegas;
+            //this.CurProject = this.CurVegas.Project;
 //#endif
         }
 
-        
-        [XmlIgnore]
-        public Vegas CurVegas { get; set; }
-        [XmlIgnore]
-        public Project CurProject { get; set; }
+
+        //[XmlIgnore]
+        //public Vegas CurVegas { get; set; }
+        //[XmlIgnore]
+        //public Project CurProject { get; set; }
         [XmlIgnore]
         public VegTrack Track { get; set; }
 

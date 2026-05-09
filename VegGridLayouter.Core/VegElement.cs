@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
+using static VegGridLayouter.Core.VegasContextFactory;
 
 namespace VegGridLayouter.Core
 {
@@ -76,8 +72,8 @@ namespace VegGridLayouter.Core
         public virtual void Generate()
         {
             // 得到工程画布的大小
-            double width = CurProject.Video.Width;
-            double height = CurProject.Video.Height;
+            double width = Context.Project.Video.Width;
+            double height = Context.Project.Video.Height;
 
             this.ComputedWidth -= this.Margin.GetLeftRight();
             this.ComputedHeight -= this.Margin.GetTopBottom();

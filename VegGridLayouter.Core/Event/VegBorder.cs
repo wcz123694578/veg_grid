@@ -1,5 +1,6 @@
 ﻿using ScriptPortal.Vegas;
 using VegGridLayouter.Core.Visual;
+using static VegGridLayouter.Core.VegasContextFactory;
 
 namespace VegGridLayouter.Core.Element
 {
@@ -38,7 +39,7 @@ namespace VegGridLayouter.Core.Element
             //    str += $"{plugIn.UniqueID}, {plugIn.Name}\n";
             //}
             //File.WriteAllText("res.txt", str);
-            PlugInNode plugIn = CurVegas.Generators.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:solidcolor}");
+            PlugInNode plugIn = Context.Generators.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:solidcolor}");
 
             // TODO: 还没想好圆角要怎么加，每个创建的轨道都来一个软对比？还是动态地调整，当CornerRadius>0时才加？
             // TODO: o，还是再来个派生类好了。。。
@@ -48,7 +49,7 @@ namespace VegGridLayouter.Core.Element
 
             ApplyColor(videoEvent);
 
-            PlugInNode maskPlugIn = CurVegas.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
+            PlugInNode maskPlugIn = VegasContextFactory.Context.VideoFX.GetChildByUniqueID("{Svfx:com.vegascreativesoftware:bzmasking}");
             this.maskEffect = VegEventHelper.AddVideoFX(videoEvent, maskPlugIn);
             ApplySize(videoEvent);
         }
@@ -64,12 +65,11 @@ namespace VegGridLayouter.Core.Element
 
         public override void ApplySize(VideoEvent videoEvent)
         {
-            
             OFXDoubleParameter widthParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Width_0"];
             OFXDoubleParameter heightParameter = (OFXDoubleParameter)maskEffect.OFXEffect["Height_0"];
 
-            widthParameter.Value = (this.Width - (Margin.Left + Margin.Right) * (CurProject.Video.Width / this.Track.Width)) / this.Width;
-            heightParameter.Value = (this.Height - (Margin.Top + Margin.Bottom) * (CurProject.Video.Height / this.Track.Height)) / this.Height;
+            widthParameter.Value = (this.Width - (Margin.Left + Margin.Right) * (Context.Project.Video.Width / this.Track.Width)) / this.Width;
+            heightParameter.Value = (this.Height - (Margin.Top + Margin.Bottom) * (Context.Project.Video.Height / this.Track.Height)) / this.Height;
         }
     }
 }
