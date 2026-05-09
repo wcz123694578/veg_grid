@@ -2,6 +2,7 @@
 using Prism.Commands;
 using Prism.Events;
 using Prism.Mvvm;
+using Prism.Services.Dialogs;
 using ScriptPortal.Vegas;
 using System;
 using System.Collections.ObjectModel;
@@ -251,13 +252,20 @@ namespace VegGridLayouter.UI.ViewModels
 
         private IEventAggregator _aggregator;
 
-        public MainWindowViewModel(IEventAggregator eventAggregator, Vegas vegas)
+        public MainWindowViewModel()
+        {
+
+        }
+
+        public MainWindowViewModel(IEventAggregator eventAggregator, IDialogService dialogService, Vegas vegas)
         {
             this._vegas = vegas;
+            this._dialogService = dialogService;
             
-            GenerateCommand = new DelegateCommand(generate);
-            LoadCommand = new DelegateCommand(load);
-            SaveCommand = new DelegateCommand(save);
+            GenerateCommand = new DelegateCommand(OnGenerate);
+            LoadCommand = new DelegateCommand(OnLoad);
+            SaveCommand = new DelegateCommand(OnSave);
+            OpenAboutWindowCommand = new DelegateCommand(() => _dialogService.ShowDialog("About"));
 
             Code = "<VegGrid/>";
 
@@ -268,7 +276,7 @@ namespace VegGridLayouter.UI.ViewModels
             _aggregator.GetEvent<UpdateXmlEvent>().Subscribe(UpdateXmlEventProcesser);
             _aggregator.GetEvent<LoadXmlToTreeViewEvent>().Subscribe(LoadXmlToTreeViewEventProcesser);
 
-            loadConfigFile();
+            LoadConfigFile();
 
             LoadLog();
         }
@@ -285,11 +293,11 @@ namespace VegGridLayouter.UI.ViewModels
             Code = UpdateXml().ToString();
         }
 
-        private string logFileName = $@"{Environment.GetEnvironmentVariable("AppData")}\Vegas Pro\layouter_log.txt";
+        private string _logFileName = $@"{Environment.GetEnvironmentVariable("AppData")}\Vegas Pro\layouter_log.txt";
 
         private void LoadLog()
         {
-            string filename = logFileName;
+            string filename = _logFileName;
             try
             {
                 using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Read))
@@ -302,19 +310,17 @@ namespace VegGridLayouter.UI.ViewModels
             }
             catch (Exception ex)
             {
-                printLog(ex.ToString());
+                PrintLog(ex.ToString());
             }
         }
 
         private readonly Vegas _vegas;
+        private readonly IDialogService _dialogService;
 
         public DelegateCommand GenerateCommand { get; set; }
         public DelegateCommand LoadCommand { get; set; }
         public DelegateCommand SaveCommand { get; set; }
-        public DelegateCommand OpenAboutWindowCommand { get; set; } = new DelegateCommand(() =>
-        {
-            WindowsManager.Show("AboutWindow", new AboutWindowViewModel());
-        });
+        public DelegateCommand OpenAboutWindowCommand { get; set; }
 
 
 
@@ -323,14 +329,14 @@ namespace VegGridLayouter.UI.ViewModels
 
         public string FilePath { get; set; } = "";
 
-        private void generate()
+        private void OnGenerate()
         {
             // FileStream fs = File.Open("test.xml", FileMode.Open);
             VegElement element = new VegElement();
 
             try
             {
-                debugXml("解析XML...");
+                DebugXml("解析XML...");
 
                 element = VegXmlDeserializer.DeserializeXmlString(this._code);
 
@@ -342,25 +348,25 @@ namespace VegGridLayouter.UI.ViewModels
                     }
                 });
 
-                debugXml("生成完毕！");
+                DebugXml("生成完毕！");
                 
                 
             }
             catch (Exception ex)
             {
-                printLog(ex.ToString());
+                PrintLog(ex.ToString());
             }
         }
 
-        private void debugXml(string message)
+        private void DebugXml(string message)
         {
-            printLog(Path.GetFileName(FilePath) + ": " + message);
+            PrintLog(Path.GetFileName(FilePath) + ": " + message);
         }
 
-        private void printLog(string message)
+        private void PrintLog(string message)
         {
             message += "\n";
-            using (FileStream fs = new FileStream(logFileName, FileMode.Append, FileAccess.Write, FileShare.None))
+            using (FileStream fs = new FileStream(_logFileName, FileMode.Append, FileAccess.Write, FileShare.None))
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(message);
                 fs.Write(buffer, 0, buffer.Length);
@@ -369,7 +375,7 @@ namespace VegGridLayouter.UI.ViewModels
             LoadLog();
         }
 
-        private void load()
+        private void OnLoad()
         {
             System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog();
             openFileDialog.Filter = "XML文件|*.xml";
@@ -394,11 +400,11 @@ namespace VegGridLayouter.UI.ViewModels
             }
             catch (Exception ex)
             {
-                printLog(ex.ToString());
+                PrintLog(ex.ToString());
             }
         }
 
-        private void save()
+        private void OnSave()
         {
             string path;
 
@@ -428,17 +434,17 @@ namespace VegGridLayouter.UI.ViewModels
                 {
                     byte[] buffer = Encoding.UTF8.GetBytes(_code);
                     fs.Write(buffer, 0, buffer.Length);
-                    debugXml("保存成功");
+                    DebugXml("保存成功");
                 }
             }
             catch (Exception ex)
             {
-                printLog(ex.ToString());
+                PrintLog(ex.ToString());
             }
             
         }
 
-        private void loadConfigFile()
+        private void LoadConfigFile()
         {
             string file = $@"{StaticVariable.FilePath}\{StaticVariable.ConfigFileName}";
             OperateConfigFile oc = new OperateConfigFile();
@@ -454,7 +460,7 @@ namespace VegGridLayouter.UI.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    printLog(ex.ToString());
+                    PrintLog(ex.ToString());
                 }
             }
         }

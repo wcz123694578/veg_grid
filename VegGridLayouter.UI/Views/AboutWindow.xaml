@@ -1,4 +1,4 @@
-﻿<Window x:Class="VegGridLayouter.UI.Views.AboutWindow"
+﻿<UserControl x:Class="VegGridLayouter.UI.Views.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,12 +7,11 @@
         xmlns:viewmodel="clr-namespace:VegGridLayouter.UI.ViewModels"
         mc:Ignorable="d"
         x:Name="aboutWindow"
-        Title="AboutWindow" 
         Height="350" Width="400"
         FontFamily="Microsoft YaHei Light">
-    <Window.DataContext>
+    <d:UserControl.DataContext>
         <viewmodel:AboutWindowViewModel/>
-    </Window.DataContext>
+    </d:UserControl.DataContext>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -53,7 +52,8 @@
                 VerticalAlignment="Bottom" 
                 Grid.Row="2"
                 HorizontalAlignment="Right"
-                Width="100" Click="CloseBtn_Click">
+                Command="{Binding OkCommand}"
+                Width="100">
         </Button>
     </Grid>
-</Window>
+</UserControl>

@@ -8,9 +8,15 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:behaviors="clr-namespace:VegGridLayouter.UI.Behaviors"
         xmlns:view="clr-namespace:VegGridLayouter.UI.Views"
+        xmlns:viewModel="clr-namespace:VegGridLayouter.UI.ViewModels"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         Icon="Resources/logo.ico">
+
+    <d:Window.DataContext>
+        <viewModel:MainWindowViewModel/>
+    </d:Window.DataContext>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

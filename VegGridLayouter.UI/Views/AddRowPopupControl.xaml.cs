@@ -1,6 +1,7 @@
 ﻿using Prism.Ioc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,13 @@ namespace VegGridLayouter.UI.Views
         public AddRowPopupControl()
         {
             InitializeComponent();
+
+            bool isInDesignMode = DesignerProperties.GetIsInDesignMode(new DependencyObject());
+
+            if (isInDesignMode)
+            {
+                return;
+            }
 
             this.DataContext = ServiceLocator.Container.Resolve<AddRowPopupControlViewModel>();
         }

@@ -33,7 +33,7 @@ namespace VegGridLayouter.UI
             MainWindowViewModel mainWindowViewModel = _container.Resolve<MainWindowViewModel>();
             this.DataContext = mainWindowViewModel;
 
-            WindowsManager.Register<AboutWindow>("AboutWindow");
+            //WindowsManager.Register<AboutWindow>("AboutWindow");
 
             ICSharpCode.AvalonEdit.Search.SearchPanel.Install(TextEditor);
             foldingManager = FoldingManager.Install(TextEditor.TextArea);
