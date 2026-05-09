@@ -34,6 +34,8 @@
                 <ColumnDefinition Width="150"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="auto"
+                                  MinWidth="150"/>
             </Grid.ColumnDefinitions>
             <view:SetGridControl/>
             <GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Gray"/>
@@ -70,6 +72,10 @@
                         <behaviors:LogBoxBehavior/>
                     </i:Interaction.Behaviors>
                 </TextBox>
+            </Grid>
+
+            <Grid Grid.Column="3">
+                <view:PropertiesControl/>
             </Grid>
         </Grid>
     </Grid>
