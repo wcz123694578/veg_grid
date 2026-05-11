@@ -47,9 +47,6 @@ namespace VegGridLayouter.UI.ViewModels
     {
         public string Header { get; set; }
 
-        // 这几个没用了
-        public string Value { get; set; }   // 标签的值
-        public string Type { get; set; }    // 标签的类型
 
         private ObservableCollection<AttributeItem> _attributes = new ObservableCollection<AttributeItem>();
 
@@ -75,6 +72,15 @@ namespace VegGridLayouter.UI.ViewModels
                 RaisePropertyChanged(nameof(Children));
             }
         }
+
+        private object _value = null;
+
+        public object Value
+        {
+            get { return _value; }
+            set { SetProperty(ref _value, value); }
+        }
+
 
 
         private bool _isCollection = false;

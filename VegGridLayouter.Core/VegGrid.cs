@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
+using VegGridLayouter.Core.Attributes;
 using VegGridLayouter.Core.Element;
 using static VegGridLayouter.Core.VegasContextFactory;
 
@@ -9,11 +11,14 @@ namespace VegGridLayouter.Core
 {
     public class VegGrid : VegElement
     {
+        [PropertiesControlDescription("行定义", true)]
         public List<RowDefinition> RowDefinitions { get; set; } = new List<RowDefinition>();
+        [PropertiesControlDescription("列定义", true)]
 
         public List<ColumnDefinition> ColumnDefinitions { get; set; } = new List<ColumnDefinition>();
 
         // public List<GridChild> Children = new List<GridChild>();
+        [PropertiesControlDescription("嵌套网格", true)]
         public VegGridCollection Children { get; set; }
 
         public VegGrid()
@@ -129,6 +134,7 @@ namespace VegGridLayouter.Core
             return sizes;
         }
 
+        [XmlIgnore]
         /// <summary>
         /// 获取当前元素在Vegas中的实际位置（以父元素中心为原点）
         /// </summary>

@@ -35,6 +35,7 @@ namespace VegGridLayouter.Core
 
         private VegElement _parent;
 
+        [XmlIgnore]
         internal VegElement Parent
         {
             get
@@ -48,6 +49,7 @@ namespace VegGridLayouter.Core
             }
         }
 
+        [XmlIgnore]
         internal int Level { get; set; }
 
         private string _marginString;
@@ -111,16 +113,24 @@ namespace VegGridLayouter.Core
         [XmlAttribute]
         public int ColumnSpan { get; set; } = 1;
 
+        [XmlIgnore]
         internal double ComputedX { get; set; }
+        [XmlIgnore]
         internal double ComputedY { get; set; }
+        [XmlIgnore]
         internal double ComputedWidth { get; set; }
+        [XmlIgnore]
         internal double ComputedHeight { get; set; }
 
+        [XmlIgnore]
         internal double TempWidth { get; set; }         // TempWidth和TempHeight是递归到某一层后
                                                         // 按父级对这个轨道的计算尺寸的比例换算成能够铺满整个轨道的尺寸
                                                         // 因为子母轨下面的轨道是按照工程尺寸来的
+        [XmlIgnore]
         internal double TempHeight { get; set; }
+        [XmlIgnore]
         internal double TrackWidth { get; set; }
+        [XmlIgnore]
         internal double TrackHeight { get; set; }
 
         //internal double OffsetX { get; set; }

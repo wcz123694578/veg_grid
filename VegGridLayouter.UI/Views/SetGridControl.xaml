@@ -20,6 +20,13 @@
                     ItemsSource="{Binding Root, UpdateSourceTrigger=PropertyChanged}"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectedItemChanged">
+                    <prism:InvokeCommandAction Command="{Binding TreeViewItemSelectedCommand}" 
+                                               CommandParameter="{Binding SelectedItem, ElementName=GridInfo}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal">

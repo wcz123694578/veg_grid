@@ -7,9 +7,13 @@ using ScriptPortal.Vegas;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using VegGridLayouter.Core;
+using VegGridLayouter.Core.Attributes;
 using VegGridLayouter.Parser;
 using VegGridLayouter.UI.Events;
 
@@ -17,6 +21,7 @@ namespace VegGridLayouter.UI.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+
         private string _code;
 
         public string Code
@@ -140,78 +145,143 @@ namespace VegGridLayouter.UI.ViewModels
             }
         }
 
-        private ObservableCollection<TreeViewItemViewModel> ParseXml(XElement rootElement, TreeViewItemViewModel parent = null)
+        internal ObservableCollection<TreeViewItemViewModel> ParseXml(XElement rootElement, TreeViewItemViewModel parent = null)
         {
             var items = new ObservableCollection<TreeViewItemViewModel>();
 
+            var elementName = rootElement.Name.LocalName;
 
+            Assembly assembly = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .FirstOrDefault(a => a.GetName().Name == "VegGridLayouter.Core");
 
-            foreach (var element in rootElement.Elements())
+            var typeInfo = assembly?
+                    .GetTypes()
+                    .FirstOrDefault(t => t.Name == elementName);
+
+            if (StaticVariable.CollectionDictionary.Contains(elementName))
             {
-                string header = "";
-                switch (element.Name.LocalName) 
+                foreach (var element in rootElement.Elements())
                 {
-                    case "RowDefinitions":
-                        header = "行定义";
-                        break;
-                    case "ColumnDefinitions":
-                        header = "列定义";
-                        break;
-                    case "RowDefinition":
-                        header = "行";
-                        break;
-                    case "ColumnDefinition":
-                        header = "列";
-                        break;
-                    case "Children":
-                        header = "嵌套网格";
-                        break;
-                    case "VegGrid":
-                        header = "网格";
-                        break;
-                    default:
-                        break;
+                    var propertiesControlDescriptionAttributeInfo = assembly?.GetTypes()
+                        .FirstOrDefault(t => t.Name == element.Name.LocalName)
+                        .GetCustomAttribute<PropertiesControlDescriptionAttribute>();
+
+                    var item = new TreeViewItemViewModel(this, _aggregator)
+                    {
+                        Name = element.Name.LocalName,
+                        Parent = parent,
+                        Header = propertiesControlDescriptionAttributeInfo != null ? propertiesControlDescriptionAttributeInfo.Name : element.Name.LocalName,
+                    };
+
+                    item.SetAttributes(element);
+
+                    var childItems = ParseXml(element, item);
+                    item.Children = new ObservableCollection<TreeViewItemViewModel>(childItems);
+                    items.Add(item);
                 }
-                var item = new TreeViewItemViewModel(this, _aggregator)
+
+                return items;
+            }
+
+            foreach (var property in typeInfo.GetProperties())
+            {
+                var elements = rootElement.Elements().ToList();
+
+                var elementNames = elements
+                                   .Select(element => element.Name);
+
+                if (property.GetCustomAttribute<XmlIgnoreAttribute>() != null) continue;
+                if (property.GetCustomAttribute<XmlAttributeAttribute>() != null) continue;
+
+                TreeViewItemViewModel item = new TreeViewItemViewModel(this, _aggregator)
                 {
-                    Header = header,
-                    Name = element.Name.LocalName,
-                    Type = element.Attribute("Type")?.Value,
-                    Value = element.Attribute("Value")?.Value,
-                    Parent = parent
+                    Name = property.Name,
+                    Parent = parent,
                 };
 
-                item.SetAttributes(element);
-
-                if (element.Name.LocalName == "Children"
-                    || element.Name.LocalName == "RowDefinitions"
-                    || element.Name.LocalName == "ColumnDefinitions")
+                if (elementNames.Contains(property.Name))
                 {
-                    item.IsCollection = true;
-                    item.IsNotDefaultSet = false;
-                }
+                    var element = elements.FirstOrDefault(e => e.Name.LocalName == property.Name);
+                    var propertiesControlAttributeInfo = property.GetCustomAttribute<PropertiesControlDescriptionAttribute>();
 
-                if (element.Name.LocalName == "Children")
-                {
-                    item.IsGridRoot = true;
-                }
+                    item.Header = propertiesControlAttributeInfo != null ? propertiesControlAttributeInfo.Name : property.Name;
+                    item.IsCollection = propertiesControlAttributeInfo != null ? propertiesControlAttributeInfo.IsCollection : false;
 
-                if (element.Name.LocalName == "VegGrid"
-                    || element.Name.LocalName == "RowDefinition"
-                    || element.Name.LocalName == "ColumnDefinition")
-                {
-                    item.IsChild = true;
+                    if (element.HasElements)
+                    {
+                        item.Children = new ObservableCollection<TreeViewItemViewModel>(ParseXml(element, item));
+                    }
                 }
-
-                if (element.HasElements)
-                {
-                    item.Children = new ObservableCollection<TreeViewItemViewModel>(ParseXml(element, item));
-                }
-
-                
 
                 items.Add(item);
             }
+
+            //foreach (var element in rootElement.Elements())
+            //{
+            //    string header = "";
+
+            //    switch (element.Name.LocalName) 
+            //    {
+            //        case "RowDefinitions":
+            //            header = "行定义";
+            //            break;
+            //        case "ColumnDefinitions":
+            //            header = "列定义";
+            //            break;
+            //        case "RowDefinition":
+            //            header = "行";
+            //            break;
+            //        case "ColumnDefinition":
+            //            header = "列";
+            //            break;
+            //        case "Children":
+            //            header = "嵌套网格";
+            //            break;
+            //        case "VegGrid":
+            //            header = "网格";
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //    var item = new TreeViewItemViewModel(this, _aggregator)
+            //    {
+            //        Header = header,
+            //        Name = element.Name.LocalName,
+            //        Parent = parent
+            //    };
+
+            //    item.SetAttributes(element);
+
+            //    if (element.Name.LocalName == "Children"
+            //        || element.Name.LocalName == "RowDefinitions"
+            //        || element.Name.LocalName == "ColumnDefinitions")
+            //    {
+            //        item.IsCollection = true;
+            //        item.IsNotDefaultSet = false;
+            //    }
+
+            //    if (element.Name.LocalName == "Children")
+            //    {
+            //        item.IsGridRoot = true;
+            //    }
+
+            //    if (element.Name.LocalName == "VegGrid"
+            //        || element.Name.LocalName == "RowDefinition"
+            //        || element.Name.LocalName == "ColumnDefinition")
+            //    {
+            //        item.IsChild = true;
+            //    }
+
+            //    if (element.HasElements)
+            //    {
+            //        item.Children = new ObservableCollection<TreeViewItemViewModel>(ParseXml(element, item));
+            //    }
+
+
+
+            //    items.Add(item);
+            //}
             return items;
         }
 
@@ -257,6 +327,12 @@ namespace VegGridLayouter.UI.ViewModels
 
         }
 
+        internal MainWindowViewModel(IEventAggregator eventAggregator, IDialogService dialogService)
+        {
+            this._dialogService = dialogService;
+            this._aggregator = eventAggregator;
+        }
+
         public MainWindowViewModel(IEventAggregator eventAggregator, IDialogService dialogService, Vegas vegas)
         {
             this._vegas = vegas;
@@ -266,6 +342,7 @@ namespace VegGridLayouter.UI.ViewModels
             LoadCommand = new DelegateCommand(OnLoad);
             SaveCommand = new DelegateCommand(OnSave);
             OpenAboutWindowCommand = new DelegateCommand(() => _dialogService.ShowDialog("About"));
+            TreeViewItemSelectedCommand = new DelegateCommand<TreeViewItemViewModel>(OnTreeViewItemSelected);
 
             Code = "<VegGrid/>";
 
@@ -281,6 +358,10 @@ namespace VegGridLayouter.UI.ViewModels
             LoadLog();
         }
 
+        private void OnTreeViewItemSelected(TreeViewItemViewModel item)
+        {
+            _aggregator.GetEvent<PropertiesLoadEvent>().Publish(new PropertiesLoadEventModel() { Item = item });
+        }
 
         private void LoadXmlToTreeViewEventProcesser(LoadXmlToTreeViewEventModel obj)
         {
@@ -321,6 +402,7 @@ namespace VegGridLayouter.UI.ViewModels
         public DelegateCommand LoadCommand { get; set; }
         public DelegateCommand SaveCommand { get; set; }
         public DelegateCommand OpenAboutWindowCommand { get; set; }
+        public DelegateCommand<TreeViewItemViewModel> TreeViewItemSelectedCommand { get; set; }
 
 
 

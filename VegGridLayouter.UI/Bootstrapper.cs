@@ -28,6 +28,7 @@ namespace VegGridLayouter.UI
 
             containerRegistry.RegisterForNavigation<AddRowPopupControl, AddRowPopupControlViewModel>();
             containerRegistry.RegisterForNavigation<SetRowColumnPopup, SetRowColumnPopupViewModel>();
+            containerRegistry.RegisterForNavigation<PropertiesControl, PropertiesControlViewModel>();
 
             containerRegistry.RegisterDialog<AboutWindow, AboutWindowViewModel>("About");
             ServiceLocator.Container = Container;

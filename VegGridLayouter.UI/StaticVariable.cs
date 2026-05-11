@@ -24,5 +24,16 @@ namespace VegGridLayouter.UI
         public static string FilePath = $@"{Environment.GetEnvironmentVariable("AppData")}\Vegas Pro";
 
         public static Dispatcher CurrentDispatcher;
+
+        public static string[] CollectionDictionary
+        {
+            get
+            {
+                return new string[]
+                {
+                    "Children", "RowDefinitions", "ColumnDefinitions"
+                };
+            }
+        }
     }
 }

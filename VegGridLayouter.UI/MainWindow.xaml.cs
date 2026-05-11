@@ -1,12 +1,8 @@
 ﻿using ICSharpCode.AvalonEdit.Folding;
-using Prism.Events;
 using Prism.Ioc;
-using System.IO;
+using System;
 using System.Windows;
-using VegGridLayouter.Core;
-using VegGridLayouter.Parser;
 using VegGridLayouter.UI.ViewModels;
-using VegGridLayouter.UI.Views;
 
 namespace VegGridLayouter.UI
 {
@@ -37,6 +33,13 @@ namespace VegGridLayouter.UI
 
             ICSharpCode.AvalonEdit.Search.SearchPanel.Install(TextEditor);
             foldingManager = FoldingManager.Install(TextEditor.TextArea);
+
+            TextEditor.TextArea.Caret.PositionChanged += TextEditor_TextArea_Caret_PositionChanged;
+        }
+
+        private void TextEditor_TextArea_Caret_PositionChanged(object sender, EventArgs e)
+        {
+
         }
 
         private void TextEditor_TextChanged(object sender, System.EventArgs e)

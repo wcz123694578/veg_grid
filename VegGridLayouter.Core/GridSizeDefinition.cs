@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using VegGridLayouter.Core.Attributes;
 
 namespace VegGridLayouter.Core
 {
@@ -16,6 +17,8 @@ namespace VegGridLayouter.Core
         public int Value { get; set; }
     }
 
+    [PropertiesControlDescription("行")]
     public class RowDefinition : GridSizeDefinition { }
+    [PropertiesControlDescription("列")]
     public class ColumnDefinition : GridSizeDefinition { }
 }

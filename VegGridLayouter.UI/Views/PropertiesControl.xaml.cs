@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Prism.Ioc;
+using System.Windows.Controls;
+using VegGridLayouter.UI.ViewModels;
 
 namespace VegGridLayouter.UI.Views
 {
@@ -10,6 +12,8 @@ namespace VegGridLayouter.UI.Views
         public PropertiesControl()
         {
             InitializeComponent();
+
+            this.DataContext = ServiceLocator.Container.Resolve<PropertiesControlViewModel>();
         }
     }
 }

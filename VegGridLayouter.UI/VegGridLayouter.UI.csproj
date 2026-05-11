@@ -16,6 +16,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,6 +69,7 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Events\AddCheckedGridChildEvent.cs" />
     <Compile Include="Events\LoadXmlToTreeViewEvent.cs" />
+    <Compile Include="Events\PropertiesLoadEvent.cs" />
     <Compile Include="Events\RowColumnMessageEvent.cs" />
     <Compile Include="Events\SelectTreeViewItemEvent.cs" />
     <Compile Include="Events\UpdateXmlEvent.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="StaticVariable.cs" />
     <Compile Include="ViewModels\AboutWindowViewModel.cs" />
     <Compile Include="ViewModels\AddRowPopupControlViewModel.cs" />
+    <Compile Include="ViewModels\PropertiesControlViewModel.cs" />
     <Compile Include="ViewModels\SetRowColumnPopupViewModel.cs" />
     <Compile Include="ViewModels\TreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
